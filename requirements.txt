@@ -1,5 +1,5 @@
 flask
 werkzeug
 gunicorn
-sqlite3
-urllib.parse
+
+
