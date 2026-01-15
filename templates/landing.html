@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Autono+ | Controle simples para autônomos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .hero {
+            text-align: center;
+            padding: 100px 20px;
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .hero a {
+            padding: 14px 26px;
+            background: white;
+            color: #4f46e5;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .section {
+            padding: 80px 20px;
+            text-align: center;
+            background: #f4f6f8;
+        }
+
+        .section h2 {
+            font-size: 32px;
+            margin-bottom: 40px;
+        }
+
+        .benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .benefit {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+        .cta {
+            padding: 80px 20px;
+            text-align: center;
+            background: white;
+        }
+
+        .cta h2 {
+            font-size: 34px;
+            margin-bottom: 20px;
+        }
+
+        .cta a {
+            display: inline-block;
+            padding: 16px 32px;
+            background: #4f46e5;
+            color: white;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+    <h1>Organize seus serviços e ganhos em um só lugar</h1>
+    <p>O Autono+ é um sistema simples e profissional para autônomos que querem controle sem complicação.</p>
+    <a href="/login">Começar agora</a>
+</div>
+
+<!-- BENEFÍCIOS -->
+<div class="section">
+    <h2>Por que usar o Autono+?</h2>
+
+    <div class="benefits">
+        <div class="benefit">
+            <h3>📋 Tudo organizado</h3>
+            <p>Clientes, serviços e valores em um único painel.</p>
+        </div>
+
+        <div class="benefit">
+            <h3>💰 Controle financeiro</h3>
+            <p>Veja quanto ganhou e quanto ainda tem pra receber.</p>
+        </div>
+
+        <div class="benefit">
+            <h3>📲 Cobrança no WhatsApp</h3>
+            <p>Cobre seus clientes com um clique, sem copiar mensagem.</p>
+        </div>
+
+        <div class="benefit">
+            <h3>🚀 Simples e rápido</h3>
+            <p>Sem cursos, sem complicação. Entrou, usou.</p>
+        </div>
+    </div>
+</div>
+
+<!-- COMO FUNCIONA -->
+<div class="section">
+    <h2>Como funciona?</h2>
+    <p>1️⃣ Cadastre seus clientes<br>
+       2️⃣ Registre seus serviços<br>
+       3️⃣ Cobre pelo WhatsApp<br>
+       4️⃣ Controle seus ganhos</p>
+</div>
+
+<!-- CTA FINAL -->
+<div class="cta">
+    <h2>Comece a usar agora</h2>
+    <p>Organização e controle profissional para quem trabalha por conta própria.</p>
+    <a href="/login">Criar minha conta</a>
+</div>
+
+</body>
+</html>

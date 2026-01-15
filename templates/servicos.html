@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Serviços | Autono+</title>
+</head>
+<body>
+    {% extends "base.html" %}
+{% block title %}Serviços | Autono+{% endblock %}
+
+{% block content %}
+<h2>Serviços</h2>
+
+<form method="post">
+    <select name="cliente_id" required>
+        <option value="">Cliente</option>
+        {% for c in clientes %}
+        <option value="{{ c.id }}">{{ c.nome }}</option>
+        {% endfor %}
+    </select>
+
+    <input name="descricao" placeholder="Descrição do serviço" required>
+    <input name="valor" type="number" step="0.01" placeholder="Valor">
+    <input name="data" type="date">
+
+    <button>Registrar serviço</button>
+</form>
+
+<table>
+    <tr>
+        <th>Cliente</th>
+        <th>Serviço</th>
+        <th>Valor</th>
+        <th>Status</th>
+        <th>Ações</th>
+    </tr>
+
+    {% for s in servicos %}
+    <tr>
+        <td>{{ s.cliente_nome }}</td>
+        <td>{{ s.descricao }}</td>
+        <td>R$ {{ "%.2f"|format(s.valor) }}</td>
+        <td>{{ s.status }}</td>
+        <td>
+            {% if s.status == "pendente" %}
+                <a class="btn" href="/servicos/cobrar/{{ s.id }}">Cobrar</a>
+                <a class="btn" href="/servicos/pagar/{{ s.id }}">Pago</a>
+            {% else %}
+                ✅
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
+
+
+    <br>
+    <a href="/dashboard">Voltar</a>
+</body>
+</html>

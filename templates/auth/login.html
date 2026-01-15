@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Entrar | Autono+</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Autono+</h2>
+        <p>Organize seus serviços e ganhos</p>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <p style="color:red; text-align:center;">{{ messages[0] }}</p>
+          {% endif %}
+        {% endwith %}
+
+        <form method="post">
+            <input name="email" type="email" placeholder="Email" required>
+            <input name="senha" type="password" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+
+        <div class="link">
+            <p>Não tem conta? <a href="/register">Criar agora</a></p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
