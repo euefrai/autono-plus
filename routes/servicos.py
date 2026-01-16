@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, session
-from utils.db import get_db
+from flask import Blueprint, render_template, request, redirect, session, url_for
+from db import get_db
 
 servicos_bp = Blueprint("servicos", __name__)
 
@@ -8,7 +8,8 @@ def servicos():
     if "user_id" not in session:
         return redirect("/")
 
-    db = get_db()
+    conn = get_db()
+    cur = conn.cursor()
 
     # CADASTRAR SERVIÇO
     if request.method == "POST":
@@ -18,28 +19,29 @@ def servicos():
         data = request.form["data"]
         status = "pendente"
 
-        db.execute("""
+        cur.execute("""
             INSERT INTO servicos (user_id, cliente_id, descricao, valor, data, status)
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s)
         """, (session["user_id"], cliente_id, descricao, valor, data, status))
-        db.commit()
+        conn.commit()
 
     # LISTAR SERVIÇOS
-    servicos = db.execute("""
-        SELECT s.*, c.nome AS cliente_nome
+    cur.execute("""
+        SELECT s.id, s.descricao, s.valor, s.data, s.status, c.nome AS cliente_nome, c.telefone
         FROM servicos s
         JOIN clientes c ON c.id = s.cliente_id
-        WHERE s.user_id = ?
+        WHERE s.user_id = %s
         ORDER BY s.data DESC
-    """, (session["user_id"],)).fetchall()
+    """, (session["user_id"],))
+    servicos_lista = cur.fetchall()
 
-    clientes = db.execute(
-        "SELECT id, nome FROM clientes WHERE user_id = ?",
-        (session["user_id"],)
-    ).fetchall()
+    # BUSCAR CLIENTES PARA O SELECT DO FORMULÁRIO
+    cur.execute("SELECT id, nome FROM clientes WHERE user_id = %s", (session["user_id"],))
+    clientes_lista = cur.fetchall()
 
-    db.close()
-    return render_template("servicos.html", servicos=servicos, clientes=clientes)
+    cur.close()
+    conn.close()
+    return render_template("servicos.html", servicos=servicos_lista, clientes=clientes_lista)
 
 
 @servicos_bp.route("/servicos/pagar/<int:id>")
@@ -47,42 +49,58 @@ def pagar_servico(id):
     if "user_id" not in session:
         return redirect("/")
 
-    db = get_db()
-    db.execute(
-        "UPDATE servicos SET status = 'pago' WHERE id = ? AND user_id = ?",
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE servicos SET status = 'pago' WHERE id = %s AND user_id = %s",
         (id, session["user_id"])
     )
-    db.commit()
-    db.close()
+    conn.commit()
+    cur.close()
+    conn.close()
 
-    return redirect("/servicos")
+    return redirect(url_for("servicos.servicos"))
 
-
-from utils.whatsapp import gerar_link_whatsapp
 
 @servicos_bp.route("/servicos/cobrar/<int:id>")
 def cobrar_servico(id):
     if "user_id" not in session:
         return redirect("/")
 
-    db = get_db()
-    servico = db.execute("""
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("""
         SELECT s.valor, s.descricao, c.nome, c.telefone
         FROM servicos s
         JOIN clientes c ON c.id = s.cliente_id
-        WHERE s.id = ? AND s.user_id = ?
-    """, (id, session["user_id"])).fetchone()
-    db.close()
+        WHERE s.id = %s AND s.user_id = %s
+    """, (id, session["user_id"]))
+    servico = cur.fetchone()
+    cur.close()
+    conn.close()
 
-    mensagem = (
-        f"Olá {servico['nome']} 😊\n"
-        f"Serviço: {servico['descricao']}\n"
-        f"Valor: R$ {servico['valor']:.2f}\n"
-        "Qualquer dúvida fico à disposição!"
-    )
-
-    link = gerar_link_whatsapp(servico["telefone"], mensagem)
-    return redirect(link)
+    if servico:
+        # servico[0]=valor, servico[1]=descricao, servico[2]=nome, servico[3]=telefone
+        valor_formatado = f"{float(servico[0]):.2f}"
+        mensagem = (
+            f"Olá {servico[2]} 😊\n"
+            f"Serviço: {servico[1]}\n"
+            f"Valor: R$ {valor_formatado}\n"
+            "Qualquer dúvida fico à disposição!"
+        )
+        
+        # Importação local para evitar erros se o arquivo não existir
+        try:
+            from utils.whatsapp import gerar_link_whatsapp
+            link = gerar_link_whatsapp(servico[3], mensagem)
+            return redirect(link)
+        except ImportError:
+            # Caso não tenha a função pronta, gera um link básico
+            import urllib.parse
+            msg_encoded = urllib.parse.quote(mensagem)
+            return redirect(f"https://wa.me/{servico[3]}?text={msg_encoded}")
+    
+    return redirect(url_for("servicos.servicos"))
 
 
 @servicos_bp.route("/servicos/excluir/<int:id>")
@@ -90,15 +108,17 @@ def excluir_servico(id):
     if "user_id" not in session:
         return redirect("/login")
 
-    db = get_db()
-    db.execute(
-        "DELETE FROM servicos WHERE id = ? AND user_id = ?",
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute(
+        "DELETE FROM servicos WHERE id = %s AND user_id = %s",
         (id, session["user_id"])
     )
-    db.commit()
-    db.close()
+    conn.commit()
+    cur.close()
+    conn.close()
 
-    return redirect("/servicos")
+    return redirect(url_for("servicos.servicos"))
 
 
 @servicos_bp.route("/servicos/editar/<int:id>", methods=["GET", "POST"])
@@ -106,7 +126,8 @@ def editar_servico(id):
     if "user_id" not in session:
         return redirect("/login")
 
-    db = get_db()
+    conn = get_db()
+    cur = conn.cursor()
 
     if request.method == "POST":
         cliente_id = request.form["cliente_id"]
@@ -115,28 +136,24 @@ def editar_servico(id):
         data = request.form["data"]
         status = request.form["status"]
 
-        db.execute("""
+        cur.execute("""
             UPDATE servicos
-            SET cliente_id = ?, descricao = ?, valor = ?, data = ?, status = ?
-            WHERE id = ? AND user_id = ?
+            SET cliente_id = %s, descricao = %s, valor = %s, data = %s, status = %s
+            WHERE id = %s AND user_id = %s
         """, (cliente_id, descricao, valor, data, status, id, session["user_id"]))
-        db.commit()
-        db.close()
-        return redirect("/servicos")
+        conn.commit()
+        cur.close()
+        conn.close()
+        return redirect(url_for("servicos.servicos"))
 
-    servico = db.execute("""
-        SELECT * FROM servicos
-        WHERE id = ? AND user_id = ?
-    """, (id, session["user_id"])).fetchone()
+    # Busca dados do serviço para preencher o formulário
+    cur.execute("SELECT * FROM servicos WHERE id = %s AND user_id = %s", (id, session["user_id"]))
+    servico = cur.fetchone()
 
-    clientes = db.execute(
-        "SELECT id, nome FROM clientes WHERE user_id = ?",
-        (session["user_id"],)
-    ).fetchall()
+    # Busca clientes para o select
+    cur.execute("SELECT id, nome FROM clientes WHERE user_id = %s", (session["user_id"],))
+    clientes = cur.fetchall()
 
-    db.close()
-    return render_template(
-        "editar_servico.html",
-        servico=servico,
-        clientes=clientes
-    )
+    cur.close()
+    conn.close()
+    return render_template("editar_servico.html", servico=servico, clientes=clientes)

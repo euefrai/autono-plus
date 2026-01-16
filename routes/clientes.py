@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, session
-from utils.db import get_db
+from flask import Blueprint, render_template, request, redirect, session, url_for
+from db import get_db
 
 clientes_bp = Blueprint("clientes", __name__)
 
@@ -8,7 +8,8 @@ def clientes():
     if "user_id" not in session:
         return redirect("/")
 
-    db = get_db()
+    conn = get_db()
+    cur = conn.cursor()
 
     # CRIAR CLIENTE
     if request.method == "POST":
@@ -16,19 +17,21 @@ def clientes():
         telefone = request.form["telefone"]
         observacao = request.form["observacao"]
 
-        db.execute(
-            "INSERT INTO clientes (user_id, nome, telefone, observacao) VALUES (?, ?, ?, ?)",
+        cur.execute(
+            "INSERT INTO clientes (user_id, nome, telefone, observacao) VALUES (%s, %s, %s, %s)",
             (session["user_id"], nome, telefone, observacao)
         )
-        db.commit()
+        conn.commit()
 
     # LISTAR CLIENTES
-    clientes = db.execute(
-        "SELECT * FROM clientes WHERE user_id = ?",
+    cur.execute(
+        "SELECT id, nome, telefone, observacao FROM clientes WHERE user_id = %s",
         (session["user_id"],)
-    ).fetchall()
+    )
+    clientes = cur.fetchall()
 
-    db.close()
+    cur.close()
+    conn.close()
     return render_template("clientes.html", clientes=clientes)
 
 @clientes_bp.route("/clientes/excluir/<int:id>")
@@ -36,52 +39,61 @@ def excluir_cliente(id):
     if "user_id" not in session:
         return redirect("/login")
 
-    db = get_db()
+    conn = get_db()
+    cur = conn.cursor()
 
-    # Exclui serviços do cliente primeiro (importante)
-    db.execute(
-        "DELETE FROM servicos WHERE cliente_id = ? AND user_id = ?",
-        (id, session["user_id"])
-    )
+    try:
+        # Exclui serviços do cliente primeiro (integridade referencial)
+        cur.execute(
+            "DELETE FROM servicos WHERE cliente_id = %s AND user_id = %s",
+            (id, session["user_id"])
+        )
 
-    # Exclui o cliente
-    db.execute(
-        "DELETE FROM clientes WHERE id = ? AND user_id = ?",
-        (id, session["user_id"])
-    )
+        # Exclui o cliente
+        cur.execute(
+            "DELETE FROM clientes WHERE id = %s AND user_id = %s",
+            (id, session["user_id"])
+        )
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        print(f"Erro ao excluir cliente: {e}")
+    finally:
+        cur.close()
+        conn.close()
 
-    db.commit()
-    db.close()
-
-    return redirect("/clientes")
-
+    return redirect(url_for("clientes.clientes"))
 
 @clientes_bp.route("/clientes/editar/<int:id>", methods=["GET", "POST"])
 def editar_cliente(id):
     if "user_id" not in session:
         return redirect("/login")
 
-    db = get_db()
+    conn = get_db()
+    cur = conn.cursor()
 
     if request.method == "POST":
         nome = request.form["nome"]
         telefone = request.form["telefone"]
         observacao = request.form["observacao"]
 
-        db.execute("""
+        cur.execute("""
             UPDATE clientes
-            SET nome = ?, telefone = ?, observacao = ?
-            WHERE id = ? AND user_id = ?
+            SET nome = %s, telefone = %s, observacao = %s
+            WHERE id = %s AND user_id = %s
         """, (nome, telefone, observacao, id, session["user_id"]))
-        db.commit()
-        db.close()
-        return redirect("/clientes")
+        conn.commit()
+        cur.close()
+        conn.close()
+        return redirect(url_for("clientes.clientes"))
 
-    cliente = db.execute("""
-        SELECT * FROM clientes
-        WHERE id = ? AND user_id = ?
-    """, (id, session["user_id"])).fetchone()
-    db.close()
+    cur.execute("""
+        SELECT id, nome, telefone, observacao FROM clientes
+        WHERE id = %s AND user_id = %s
+    """, (id, session["user_id"]))
+    cliente = cur.fetchone()
+    
+    cur.close()
+    conn.close()
 
     return render_template("editar_cliente.html", cliente=cliente)
-

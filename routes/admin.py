@@ -1,63 +1,84 @@
-from flask import Blueprint, render_template, session, redirect
+from flask import Blueprint, render_template, session, redirect, url_for
 from db import get_db
 
 admin_bp = Blueprint("admin", __name__)
 
+# Função auxiliar para verificar se é admin e evitar repetição de código
+def verificar_admin():
+    if session.get("role") != "admin":
+        return redirect(url_for("auth.login"))
+    return None
+
 @admin_bp.route("/admin")
 def admin_dashboard():
-    if session.get("role") != "admin":
-        return redirect("/login")
+    erro = verificar_admin()
+    if erro: return erro
     return render_template("admin/dashboard.html")
-
 
 @admin_bp.route("/admin/usuarios")
 def admin_usuarios():
-    if session.get("role") != "admin":
-        return redirect("/login")
+    erro = verificar_admin()
+    if erro: return erro
 
-    db = get_db()
-    usuarios = db.execute(
-        "SELECT id, nome, email, role FROM usuarios"
-    ).fetchall()
-    db.close()
-
+    conn = get_db()
+    cur = conn.cursor()
+    
+    # Busca a lista de usuários para exibir na tabela do admin
+    cur.execute("SELECT id, nome, email, role FROM usuarios ORDER BY id DESC")
+    usuarios = cur.fetchall()
+    
+    cur.close()
+    conn.close()
+    
     return render_template("admin/usuarios.html", usuarios=usuarios)
-
 
 @admin_bp.route("/admin/usuarios/excluir/<int:id>")
 def excluir_usuario(id):
-    if session.get("role") != "admin":
-        return redirect("/login")
+    erro = verificar_admin()
+    if erro: return erro
 
-    db = get_db()
+    conn = get_db()
+    cur = conn.cursor()
 
-    db.execute("DELETE FROM servicos WHERE user_id = ?", (id,))
-    db.execute("DELETE FROM clientes WHERE user_id = ?", (id,))
-    db.execute("DELETE FROM usuarios WHERE id = ?", (id,))
+    try:
+        # No PostgreSQL/Supabase usamos %s em vez de ?
+        cur.execute("DELETE FROM servicos WHERE user_id = %s", (id,))
+        cur.execute("DELETE FROM clientes WHERE user_id = %s", (id,))
+        cur.execute("DELETE FROM usuarios WHERE id = %s", (id,))
 
-    db.execute(
-        "INSERT INTO logs (acao, usuario_id, data) VALUES (?, ?, datetime('now'))",
-        ("Usuário excluído", id)
-    )
+        # Registro de log usando a sintaxe correta do Postgres (NOW())
+        cur.execute(
+            "INSERT INTO logs (acao, usuario_id, data) VALUES (%s, %s, NOW())",
+            ("Usuário excluído", id)
+        )
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        print(f"Erro ao excluir: {e}")
+    finally:
+        cur.close()
+        conn.close()
 
-    db.commit()
-    db.close()
-
-    return redirect("/admin/usuarios")
-
+    return redirect(url_for("admin.admin_usuarios"))
 
 @admin_bp.route("/admin/logs")
 def admin_logs():
-    if session.get("role") != "admin":
-        return redirect("/login")
+    erro = verificar_admin()
+    if erro: return erro
 
-    db = get_db()
-    logs = db.execute("""
-        SELECT l.acao, l.data, u.email
+    conn = get_db()
+    cur = conn.cursor()
+    
+    # Query ajustada para PostgreSQL com LEFT JOIN
+    cur.execute("""
+        SELECT l.acao, l.data, u.email 
         FROM logs l
         LEFT JOIN usuarios u ON u.id = l.usuario_id
         ORDER BY l.id DESC
-    """).fetchall()
-    db.close()
+    """)
+    logs = cur.fetchall()
+    
+    cur.close()
+    conn.close()
 
     return render_template("admin/logs.html", logs=logs)
