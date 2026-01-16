@@ -1,27 +1,43 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Autono+{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
-
-<div class="container">
-
-    <div class="topbar">
-        <h1>Autono+</h1>
-        <div>
-            <a href="/dashboard">Dashboard</a> |
-            <a href="/clientes">Clientes</a> |
-            <a href="/servicos">Serviços</a> |
-            <a href="/logout">Sair</a>
+<body class="light-theme"> <nav class="navbar">
+        <div class="nav-container">
+            <a href="/dashboard" class="brand">Autono<span>+</span></a>
+            
+            <div class="nav-links">
+                <a href="/dashboard" class="nav-item">Dashboard</a>
+                <a href="/clientes" class="nav-item">Clientes</a>
+                <a href="/servicos" class="nav-item">Serviços</a>
+                
+                <div class="nav-actions">
+                    <button id="theme-toggle" class="btn-icon">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+                    <a href="/logout" class="btn-logout">Sair</a>
+                </div>
+            </div>
         </div>
-    </div>
+    </nav>
 
-    {% block content %}{% endblock %}
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
 
-</div>
-
+    <script>
+        // Script simples para troca de tema (opcional se você já tiver um)
+        const btn = document.getElementById("theme-toggle");
+        btn.onclick = () => {
+            document.body.classList.toggle("dark-theme");
+            const icon = document.getElementById("theme-icon");
+            icon.innerText = document.body.classList.contains("dark-theme") ? "☀️" : "🌙";
+        };
+    </script>
 </body>
 </html>
