@@ -80,7 +80,9 @@ def cobrar_servico(id):
     conn.close()
 
     if servico:
-        # servico[0]=valor, servico[1]=descricao, servico[2]=nome, servico[3]=telefone
+        # servico[3] é o telefone. Vamos garantir que tenha apenas números:
+        telefone_limpo = "".join(filter(str.isdigit, servico[3]))
+        
         valor_formatado = f"{float(servico[0]):.2f}"
         mensagem = (
             f"Olá {servico[2]} 😊\n"
@@ -89,16 +91,11 @@ def cobrar_servico(id):
             "Qualquer dúvida fico à disposição!"
         )
         
-        # Importação local para evitar erros se o arquivo não existir
-        try:
-            from utils.whatsapp import gerar_link_whatsapp
-            link = gerar_link_whatsapp(servico[3], mensagem)
-            return redirect(link)
-        except ImportError:
-            # Caso não tenha a função pronta, gera um link básico
-            import urllib.parse
-            msg_encoded = urllib.parse.quote(mensagem)
-            return redirect(f"https://wa.me/{servico[3]}?text={msg_encoded}")
+        import urllib.parse
+        msg_encoded = urllib.parse.quote(mensagem)
+        
+        # O link do WhatsApp funciona melhor assim para mobile:
+        return redirect(f"https://api.whatsapp.com/send?phone=55{telefone_limpo}&text={msg_encoded}")
     
     return redirect(url_for("servicos.servicos"))
 
