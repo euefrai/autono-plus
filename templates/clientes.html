@@ -31,8 +31,17 @@
         <td>{{ c.nome }}</td>
         <td>{{ c.telefone }}</td>
         <td>{{ c.observacao }}</td>
-        <a class="btn" href="/clientes/editar/{{ c.id }}">Editar</a>
         <td>
+            <a class="btn" href="/clientes/editar/{{ c.id }}">
+                Editar
+            </a>
+        </td>
+        <td>
+            <a class="btn" href="/clientes/excluir/{{ c.id }}"
+            onclick="return confirm('Excluir este cliente?')">
+            Excluir
+            </a>
+        </td>
     </tr>
     {% endfor %}
 </table>
