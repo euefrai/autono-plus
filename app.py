@@ -5,7 +5,7 @@ from routes.clientes import clientes_bp
 from routes.servicos import servicos_bp
 from routes.landing import landing_bp
 from config import SECRET_KEY
-
+from routes.admin import admin_bp
 
 
 app = Flask(__name__)
@@ -13,6 +13,7 @@ app.config["SECRET_KEY"] = SECRET_KEY
 app.register_blueprint(clientes_bp)
 app.register_blueprint(servicos_bp)
 app.register_blueprint(landing_bp)
+app.register_blueprint(admin_bp)
 
 # Blueprints
 app.register_blueprint(auth_bp)

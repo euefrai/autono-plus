@@ -1,0 +1,7 @@
+<h2>Logs do sistema</h2>
+
+<ul>
+{% for l in logs %}
+  <li>{{ l.data }} — {{ l.email }} — {{ l.acao }}</li>
+{% endfor %}
+</ul>

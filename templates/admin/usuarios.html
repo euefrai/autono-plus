@@ -1,0 +1,23 @@
+<h2>Usuários</h2>
+
+<table>
+<tr>
+  <th>Nome</th><th>Email</th><th>Role</th><th>Ações</th>
+</tr>
+
+{% for u in usuarios %}
+<tr>
+  <td>{{ u.nome }}</td>
+  <td>{{ u.email }}</td>
+  <td>{{ u.role }}</td>
+  <td>
+    {% if u.role != 'admin' %}
+    <a href="/admin/usuarios/excluir/{{ u.id }}"
+       onclick="return confirm('Excluir usuário?')">
+       Excluir
+    </a>
+    {% endif %}
+  </td>
+</tr>
+{% endfor %}
+</table>
