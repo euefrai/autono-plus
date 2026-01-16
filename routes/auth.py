@@ -26,7 +26,7 @@ def login():
             session["user_nome"] = user[1]
             session["role"] = user[3] if len(user) > 3 else "user"
             
-            return redirect(url_for("dashboard.index")) # Use url_for por segurança
+            return redirect(url_for("dashboard.dashboard")) # Use url_for por segurança
         
         else:
             flash("Email ou senha inválidos", "danger")
