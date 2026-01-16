@@ -1,7 +1,34 @@
-<h2>Logs do sistema</h2>
+{% extends "base.html" %}
+{% block title %}Logs do Sistema | Autono+{% endblock %}
 
-<ul>
-{% for l in logs %}
-  <li>{{ l.data }} — {{ l.email }} — {{ l.acao }}</li>
-{% endfor %}
-</ul>
+{% block content %}
+<div class="container">
+    <h2>Logs do Sistema</h2>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Data e Hora</th>
+                    <th>Usuário (E-mail)</th>
+                    <th>Ação Realizada</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for l in logs %}
+                <tr>
+                    <td>{{ l[1].strftime('%d/%m/%Y %H:%M') if l[1] else '---' }}</td>
+                    <td>{{ l[2] if l[2] else 'Sistema' }}</td>
+                    <td><strong>{{ l[0] }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions">
+        <br>
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn-back">← Voltar ao Painel Admin</a>
+    </div>
+</div>
+{% endblock %}
