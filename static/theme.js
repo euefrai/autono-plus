@@ -1,16 +1,19 @@
+// 1. EXECUÇÃO IMEDIATA (Evita o "piscar" branco)
+const currentTheme = localStorage.getItem("theme");
+if (currentTheme === "dark") {
+    document.body.classList.add("dark-theme");
+}
+
+// 2. CONFIGURAÇÃO DO BOTÃO (Após o carregamento da página)
 document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById("theme-toggle");
     const themeIcon = document.getElementById("theme-icon");
-    
-    // 1. Ao carregar, verifica o que está salvo no navegador
-    const currentTheme = localStorage.getItem("theme");
 
-    if (currentTheme === "dark") {
-        document.body.classList.add("dark-theme");
+    // Ajusta o ícone inicial com base no tema carregado
+    if (document.body.classList.contains("dark-theme")) {
         if (themeIcon) themeIcon.innerText = "☀️";
     }
 
-    // 2. Lógica do Clique
     if (btn) {
         btn.onclick = () => {
             document.body.classList.toggle("dark-theme");
@@ -23,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (themeIcon) themeIcon.innerText = "🌙";
             }
             
-            // 3. Salva a escolha para não perder ao mudar de página
             localStorage.setItem("theme", theme);
         };
     }
