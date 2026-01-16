@@ -61,6 +61,7 @@ def pagar_servico(id):
 
     return redirect(url_for("servicos.servicos"))
 
+import urllib.parse
 
 @servicos_bp.route("/servicos/cobrar/<int:id>")
 def cobrar_servico(id):
@@ -80,9 +81,14 @@ def cobrar_servico(id):
     conn.close()
 
     if servico:
-        # servico[3] é o telefone. Vamos garantir que tenha apenas números:
+        # 1. Limpa o telefone: remove ( ), -, espaços e mantém só números
         telefone_limpo = "".join(filter(str.isdigit, servico[3]))
         
+        # 2. Garante que tem o 55 (Brasil) na frente
+        if not telefone_limpo.startswith("55"):
+            telefone_limpo = "55" + telefone_limpo
+        
+        # 3. Formata a mensagem
         valor_formatado = f"{float(servico[0]):.2f}"
         mensagem = (
             f"Olá {servico[2]} 😊\n"
@@ -91,11 +97,12 @@ def cobrar_servico(id):
             "Qualquer dúvida fico à disposição!"
         )
         
-        import urllib.parse
+        # 4. Codifica a mensagem para URL (transforma espaços em %20, etc)
         msg_encoded = urllib.parse.quote(mensagem)
         
-        # O link do WhatsApp funciona melhor assim para mobile:
-        return redirect(f"https://api.whatsapp.com/send?phone=55{telefone_limpo}&text={msg_encoded}")
+        # 5. Redireciona usando o wa.me (mais rápido no celular)
+        link = f"https://wa.me/{telefone_limpo}?text={msg_encoded}"
+        return redirect(link)
     
     return redirect(url_for("servicos.servicos"))
 
