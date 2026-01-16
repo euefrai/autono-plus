@@ -19,32 +19,34 @@
     <button>Adicionar cliente</button>
 </form>
 
-<table>
-    <tr>
-        <th>Nome</th>
-        <th>Telefone</th>
-        <th>Observação</th>
-        <th>Ações</th>
-    </tr>
-    {% for c in clientes %}
-    <tr>
-        <td>{{ c.nome }}</td>
-        <td>{{ c.telefone }}</td>
-        <td>{{ c.observacao }}</td>
-        <td>
-            <a class="btn" href="/clientes/editar/{{ c.id }}">
-                Editar
-            </a>
-        </td>
-        <td>
-            <a class="btn" href="/clientes/excluir/{{ c.id }}"
-            onclick="return confirm('Excluir este cliente?')">
-            Excluir
-            </a>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="table wrapper">    
+    <table>
+        <tr>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Observação</th>
+            <th>Ações</th>
+        </tr>
+        {% for c in clientes %}
+        <tr>
+            <td>{{ c.nome }}</td>
+            <td>{{ c.telefone }}</td>
+            <td>{{ c.observacao }}</td>
+            <td>
+                <a class="btn" href="/clientes/editar/{{ c.id }}">
+                    Editar
+                </a>
+            </td>
+            <td>
+                <a class="btn" href="/clientes/excluir/{{ c.id }}"
+                onclick="return confirm('Excluir este cliente?')">
+                Excluir
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 {% endblock %}
 
 
