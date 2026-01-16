@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Editar Cliente | Autono+{% endblock %}
+
+{% block content %}
+<h2>Editar Cliente</h2>
+
+<form method="post">
+    <input name="nome" value="{{ cliente.nome }}" required>
+    <input name="telefone" value="{{ cliente.telefone }}">
+    <input name="observacao" value="{{ cliente.observacao }}">
+    <button>Salvar alterações</button>
+</form>
+{% endblock %}
