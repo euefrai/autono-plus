@@ -210,3 +210,63 @@ html, body {
     overflow-x: hidden;
 }
 
+body {
+    font-size: 16px;
+}
+
+h1 {
+    font-size: clamp(28px, 5vw, 42px);
+}
+
+h2 {
+    font-size: clamp(22px, 4.5vw, 32px);
+}
+
+p {
+    font-size: clamp(15px, 4vw, 18px);
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+
+    header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    nav a {
+        display: block;
+        padding: 10px 0;
+    }
+
+    .hero {
+        padding: 60px 20px;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+    }
+
+    .benefits {
+        grid-template-columns: 1fr;
+    }
+
+    button, .btn {
+        width: 100%;
+    }
+
+    input, select {
+        font-size: 16px; /* evita zoom automático no iOS */
+    }
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
