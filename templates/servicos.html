@@ -9,56 +9,72 @@
 {% block title %}Serviços | Autono+{% endblock %}
 
 {% block content %}
-<h2>Serviços</h2>
+<div class="container">
+    <h2>Serviços</h2>
 
-<form method="post">
-    <select name="cliente_id" required>
-        <option value="">Cliente</option>
-        {% for c in clientes %}
-        <option value="{{ c.id }}">{{ c.nome }}</option>
-        {% endfor %}
-    </select>
+    <section class="form-section">
+        <form method="post" class="card">
+            <select name="cliente_id" required>
+                <option value="">Selecione o Cliente</option>
+                {% for c in clientes %}
+                    <option value="{{ c[0] }}">{{ c[1] }}</option>
+                {% endfor %}
+            </select>
 
-    <input name="descricao" placeholder="Descrição do serviço" required>
-    <input name="valor" type="number" step="0.01" placeholder="Valor">
-    <input name="data" type="date">
+            <input name="descricao" placeholder="Descrição do serviço" required>
+            <input name="valor" type="number" step="0.01" placeholder="Valor">
+            <input name="data" type="date" required>
 
-    <button>Registrar serviço</button>
-</form>
+            <button type="submit" class="btn-primary">Registrar serviço</button>
+        </form>
+    </section>
 
-<div class="table wrapper">    
-    <table>
-        <tr>
-            <th>Cliente</th>
-            <th>Serviço</th>
-            <th>Valor</th>
-            <th>Status</th>
-            <th>Ações</th>
-        </tr>
-    
-        {% for s in servicos %}
-        <tr>
-            <td>{{ s.cliente_nome }}</td>
-            <td>{{ s.descricao }}</td>
-            <td>R$ {{ "%.2f"|format(s.valor) }}</td>
-            <td>{{ s.status }}</td>
-            <td>
-                {% if s.status == "pendente" %}
-                    <a class="btn" href="/servicos/cobrar/{{ s.id }}">Cobrar</a>
-                    <a class="btn" href="/servicos/pagar/{{ s.id }}">Pago</a>
-                    <a class="btn" href="/servicos/editar/{{ s.id }}">Editar</a>
-                    <a class="btn" href="/servicos/excluir/{{ s.id }}"
-                        onclick="return confirm('Excluir este serviço?')">
-                        🗑️ Excluir
-                        </a>
-                {% else %}
-                    ✅
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-</div>   
+    <hr>
+
+    <div class="table-wrapper">    
+        <table>
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Serviço</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in servicos %}
+                <tr>
+                    <td>{{ s[5] }}</td>
+                    <td>{{ s[1] }}</td>
+                    <td>R$ {{ "%.2f"|format(s[2]|float) }}</td>
+                    <td>
+                        <span class="status-badge {{ s[4] }}">
+                            {{ s[4]|capitalize }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if s[4] == "pendente" %}
+                            <a class="btn btn-whatsapp" href="{{ url_for('servicos.cobrar_servico', id=s[0]) }}">Cobrar</a>
+                            <a class="btn btn-success" href="{{ url_for('servicos.pagar_servico', id=s[0]) }}">Marcar Pago</a>
+                            <a class="btn btn-edit" href="{{ url_for('servicos.editar_servico', id=s[0]) }}">Editar</a>
+                            <a class="btn btn-delete" href="{{ url_for('servicos.excluir_servico', id=s[0]) }}"
+                                onclick="return confirm('Excluir este serviço?')">🗑️</a>
+                        {% else %}
+                            <span class="done">✅ Concluído</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions">
+        <br>
+        <a href="{{ url_for('dashboard.dashboard') }}" class="btn-back">← Voltar ao Dashboard</a>
+    </div>
+</div>
 {% endblock %}
 
 
