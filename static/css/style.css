@@ -39,8 +39,8 @@ body.dark-theme {
 }
 
 html, body {
-    overflow-x: hidden; /* Garante que nada escape para o lado */
     width: 100%;
+    overflow-x: hidden; /* trava definitiva do scroll lateral */
 }
 
 body {
@@ -49,17 +49,18 @@ body {
     font-family: 'Inter', 'Segoe UI', sans-serif;
     transition: background 0.3s, color 0.3s;
     line-height: 1.6;
-    font-size: 16px; /* Tamanho base ideal para leitura em celular */
+    font-size: 16px;
 }
 
 .container {
     max-width: 1100px;
-    margin: 20px auto; /* Reduzi margem no mobile */
+    width: 100%;
+    margin: 20px auto;
     padding: 0 15px;
 }
 
 /* =========================================
-   3. NAVBAR (RESPONSIVA)
+   3. NAVBAR (RESPONSIVA E SEGURA)
    ========================================= */
 .navbar {
     position: sticky;
@@ -76,6 +77,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0 15px;
+    flex-wrap: wrap; /* evita estouro horizontal */
 }
 
 .brand {
@@ -83,12 +85,14 @@ body {
     font-weight: 700;
     text-decoration: none;
     color: var(--primary);
+    white-space: nowrap;
 }
 
 .nav-links {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     align-items: center;
+    flex-wrap: wrap; /* permite quebrar no mobile */
 }
 
 .nav-item {
@@ -96,19 +100,21 @@ body {
     color: var(--text-muted);
     font-weight: 600;
     font-size: 0.9rem;
+    white-space: nowrap;
 }
 
 .btn-logout {
     background: #fee2e2;
     color: var(--danger);
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 6px;
     text-decoration: none;
     font-size: 0.85rem;
+    white-space: nowrap;
 }
 
 /* =========================================
-   4. CARDS E TABELAS (O segredo do scroll lateral zero)
+   4. CARDS E TABELAS
    ========================================= */
 .card {
     background: var(--bg-card);
@@ -116,12 +122,13 @@ body {
     border-radius: 12px;
     box-shadow: 0 4px 12px var(--shadow);
     margin-bottom: 20px;
+    width: 100%;
 }
 
-/* Criamos um container para a tabela respirar */
+/* tabela agora nunca força o body */
 .table-wrapper {
     width: 100%;
-    overflow-x: auto; /* Apenas a tabela desliza se for grande */
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     border-radius: 8px;
     margin-top: 15px;
@@ -129,7 +136,6 @@ body {
 
 table {
     width: 100%;
-    min-width: 500px; /* Garante que os dados não fiquem esmagados */
     border-collapse: collapse;
     background: var(--bg-card);
 }
@@ -140,16 +146,18 @@ th {
     padding: 12px;
     text-align: left;
     font-size: 0.75rem;
+    white-space: nowrap;
 }
 
 td {
     padding: 12px;
     border-bottom: 1px solid var(--border);
     font-size: 0.95rem;
+    white-space: nowrap;
 }
 
 /* =========================================
-   5. FORMULÁRIOS E BOTÕES (Touch Friendly)
+   5. FORMULÁRIOS E BOTÕES
    ========================================= */
 form {
     background: var(--bg-card);
@@ -159,17 +167,18 @@ form {
 
 input, select {
     width: 100%;
-    padding: 14px; /* Aumentado para facilitar o toque */
+    padding: 14px;
     margin-bottom: 12px;
     border-radius: 8px;
     border: 1px solid var(--border);
     background: var(--bg-input);
     color: var(--text-main);
-    font-size: 1rem; /* Evita zoom automático no iOS ao focar */
+    font-size: 1rem;
 }
 
 .btn {
-    width: 100%; /* Botões largos são melhores no celular */
+    width: 100%;
+    max-width: 100%;
     background: var(--primary);
     color: white;
     border: none;
@@ -178,22 +187,36 @@ input, select {
     font-weight: 700;
     cursor: pointer;
     text-align: center;
+    white-space: normal;
 }
 
 /* =========================================
-   6. AJUSTES PARA TELAS PEQUENAS (Media Queries)
+   6. MOBILE (AJUSTES FINAIS)
    ========================================= */
 @media (max-width: 600px) {
+
     .nav-container {
-        flex-direction: column; /* Empilha logo e menu se a tela for muito pequena */
+        flex-direction: column;
+        align-items: stretch;
         gap: 10px;
     }
-    
+
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+    }
+
     .container {
         margin: 15px auto;
     }
 
     .brand {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
+    .btn-logout {
+        width: 100%;
+        text-align: center;
     }
 }
