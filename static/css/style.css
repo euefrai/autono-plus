@@ -6,11 +6,11 @@
 }
 
 body {
-    background: #f4f6f8;
-    color: #333;
+    background: linear-gradient(180deg, #f4f6f8, #eef1f5);
+    color: #1f2937;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Layout base */
 .container {
     max-width: 1100px;
     width: 100%;
@@ -18,255 +18,161 @@ body {
     padding: 20px;
 }
 
-/* Topbar */
 .topbar {
-    background: #ffffff;
-    padding: 20px 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    padding: 22px 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
 }
 
 .topbar h1 {
     font-size: 22px;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: -0.3px;
 }
 
 .topbar a {
     text-decoration: none;
-    color: #555;
-    font-weight: 500;
+    color: #4f46e5;
+    font-weight: 600;
 }
 
-/* Cards */
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
+.topbar a:hover {
+    text-decoration: underline;
 }
 
 .card {
-    background: #ffffff;
-    padding: 25px;
-    border-radius: 14px;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    background: linear-gradient(180deg, #ffffff, #fafafa);
+    padding: 28px;
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
 }
 
 .card h3 {
-    font-size: 14px;
-    color: #777;
-    margin-bottom: 10px;
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .card p {
-    font-size: 26px;
-    font-weight: 700;
-    color: #222;
+    font-size: 28px;
+    font-weight: 800;
+    color: #111827;
 }
 
-/* Botões */
 .btn {
     display: inline-block;
-    padding: 10px 18px;
-    background: #4f46e5;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
     color: white;
-    border-radius: 10px;
+    border-radius: 14px;
     text-decoration: none;
-    font-weight: 500;
-    transition: 0.2s;
+    font-weight: 600;
+    transition: all 0.25s ease;
+    box-shadow: 0 8px 20px rgba(79,70,229,0.35);
 }
 
 .btn:hover {
-    background: #4338ca;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(79,70,229,0.5);
 }
 
-/* Tabela */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin-top: 25px;
     background: #ffffff;
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.08);
 }
 
 table th {
-    background: #f0f2f5;
-    padding: 14px;
-    text-align: left;
-    font-size: 14px;
-    color: #555;
+    background: #f8fafc;
+    padding: 16px;
+    font-size: 13px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 table td {
-    padding: 14px;
-    border-top: 1px solid #eee;
+    padding: 16px;
+    border-top: 1px solid #f1f5f9;
+    font-size: 15px;
 }
 
-/* Forms */
+table tr:hover td {
+    background: #f9fafb;
+}
+
 form {
     background: #ffffff;
-    padding: 25px;
-    border-radius: 14px;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.08);
 }
 
 form input, form select {
     width: 100%;
-    padding: 12px;
-    margin-bottom: 14px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
+    padding: 14px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    font-size: 15px;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+form input:focus, form select:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.2);
 }
 
 form button {
     width: 100%;
-    padding: 12px;
-    background: #4f46e5;
+    padding: 14px;
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
     border: none;
     color: white;
-    font-weight: 600;
-    border-radius: 10px;
+    font-weight: 700;
+    border-radius: 14px;
     cursor: pointer;
+    box-shadow: 0 8px 20px rgba(79,70,229,0.4);
 }
 
 form button:hover {
-    background: #4338ca;
+    transform: translateY(-2px);
 }
- 
-/* ===== AUTH (LOGIN / REGISTER) ===== */
 
 .auth-container {
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    background: radial-gradient(circle at top, #6366f1, #1e1b4b);
 }
 
 .auth-card {
-    background: #ffffff;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
     width: 100%;
     max-width: 420px;
-    padding: 35px;
-    border-radius: 18px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    padding: 40px;
+    border-radius: 22px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
 }
 
-.auth-card h2 {
-    text-align: center;
-    margin-bottom: 10px;
-    font-size: 26px;
-}
-
-.auth-card p {
-    text-align: center;
-    color: #666;
-    margin-bottom: 25px;
-}
-
-.auth-card input {
-    width: 100%;
-    padding: 14px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    margin-bottom: 15px;
-    font-size: 15px;
-}
-
-.auth-card button {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    background: #4f46e5;
-    color: white;
-    font-size: 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.auth-card button:hover {
-    background: #4338ca;
-}
-
-.auth-card .link {
-    text-align: center;
-    margin-top: 18px;
-}
-
-.auth-card .link a {
-    color: #4f46e5;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-html, body {
-    max-width: 100%;
-    overflow-x: hidden;
-}
-
-body {
-    font-size: 16px;
-}
-
-h1 {
-    font-size: clamp(28px, 5vw, 42px);
-}
-
-h2 {
-    font-size: clamp(22px, 4.5vw, 32px);
-}
-
-p {
-    font-size: clamp(15px, 4vw, 18px);
-}
-
-.table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-}
-
-@media (max-width: 768px) {
-
-    header {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
-    }
-
-    nav a {
-        display: block;
-        padding: 10px 0;
-    }
-
-    .hero {
-        padding: 60px 20px;
-    }
-
-    .hero h1 {
-        font-size: 30px;
-    }
-
-    .benefits {
-        grid-template-columns: 1fr;
-    }
-
-    button, .btn {
-        width: 100%;
-    }
-
-    input, select {
-        font-size: 16px; /* evita zoom automático no iOS */
-    }
-}
-
-img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-}
