@@ -33,6 +33,7 @@ body.dark-theme {
 
 html, body { 
     width: 100%; 
+    min-height: 100vh;
     overflow-x: hidden; 
 }
 
@@ -41,129 +42,100 @@ body {
     color: var(--text-main);
     font-family: 'Inter', sans-serif;
     line-height: 1.6;
-    font-size: 16px;
-}
-
-.container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 20px 15px;
+    transition: background 0.3s;
 }
 
 /* =========================================
-   2. NAVBAR RESPONSIVA
+   2. AUTH (LOGIN / CADASTRO) - REINCLUÍDO
    ========================================= */
-.navbar {
-    position: sticky;
-    top: 0;
-    background: var(--nav-bg);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border);
-    z-index: 1000;
-    padding: 10px 0;
-}
-
-.nav-container {
+.auth-container {
+    min-height: 100vh;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 15px;
+    background: radial-gradient(circle at top, var(--primary), #1e1b4b);
+    padding: 20px;
 }
 
-.nav-links {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-}
-
-.nav-item {
-    text-decoration: none;
-    color: var(--text-muted);
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-/* =========================================
-   3. TABELAS E BOTÕES (O ajuste principal)
-   ========================================= */
-.table-wrapper {
-    width: 100%;
-    overflow-x: auto; /* Permite scroll se necessário */
+.auth-card {
     background: var(--bg-card);
-    border-radius: 12px;
-    box-shadow: 0 4px 12px var(--shadow);
-}
-
-table {
     width: 100%;
-    border-collapse: collapse;
-    min-width: 600px; /* Garante que os dados não fiquem esmagados */
-}
-
-th, td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-}
-
-/* Centraliza e organiza os botões de ação */
-.actions-cell {
+    max-width: 400px;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.2);
     text-align: center;
 }
 
-.btn-group-mobile {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: nowrap; /* Mantém os botões na mesma linha na tabela */
+.auth-card h2 { color: var(--primary); margin-bottom: 10px; font-size: 2rem; }
+.auth-card p { color: var(--text-muted); margin-bottom: 25px; }
+
+/* Estiliza o botão do login que não tinha classe */
+.auth-card form button {
+    width: 100%;
+    padding: 15px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
 }
+
+/* =========================================
+   3. NAVBAR, TABELAS E COMPONENTES
+   ========================================= */
+.container { max-width: 1100px; margin: 0 auto; padding: 20px 15px; }
+
+.navbar {
+    position: sticky; top: 0;
+    background: var(--nav-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    z-index: 1000; padding: 10px 0;
+}
+
+.nav-container {
+    display: flex; justify-content: space-between;
+    align-items: center; padding: 0 15px;
+}
+
+.table-wrapper {
+    width: 100%; overflow-x: auto;
+    background: var(--bg-card); border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow);
+    margin-top: 20px;
+}
+
+table { width: 100%; border-collapse: collapse; min-width: 600px; }
+th, td { padding: 15px; text-align: left; border-bottom: 1px solid var(--border); }
+
+.btn-group-mobile { display: flex; gap: 8px; justify-content: center; }
 
 .btn-sm {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;  /* Botões quadrados facilitam o toque */
-    height: 38px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-size: 1.2rem;
-    transition: 0.2s;
-    border: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 10px;
+    text-decoration: none; font-size: 1.2rem; border: none;
 }
-
-.btn-sm:active { transform: scale(0.9); }
 
 .btn-whatsapp { background: #25D366; color: white; }
 .btn-success  { background: #10b981; color: white; }
 .btn-edit     { background: #f59e0b; color: white; }
 .btn-delete   { background: #ef4444; color: white; }
 
-/* Status Badges */
-.status-badge {
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 700;
+input, select {
+    width: 100%; padding: 14px; margin-bottom: 15px;
+    border-radius: 10px; border: 1px solid var(--border);
+    background: var(--bg-input); color: var(--text-main);
+    font-size: 1rem;
 }
-.status-badge.pendente { background: #ffedd5; color: #9a3412; }
-.status-badge.pago     { background: #dcfce7; color: #166534; }
 
 /* =========================================
-   4. AJUSTES MOBILE (TELA < 600px)
+   4. AJUSTES MOBILE
    ========================================= */
 @media (max-width: 600px) {
-    .nav-container {
-        flex-direction: column;
-        gap: 12px;
-    }
-    
-    .brand { font-size: 1.5rem; }
-    
-    /* Melhora o formulário no celular */
-    input, select, .btn {
-        font-size: 16px; /* Evita zoom no iPhone */
-        padding: 15px;
-    }
+    .nav-container { flex-direction: column; gap: 10px; }
+    .auth-card { padding: 30px 20px; }
 }
