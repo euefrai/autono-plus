@@ -26,37 +26,39 @@
     <button>Registrar serviço</button>
 </form>
 
-<table>
-    <tr>
-        <th>Cliente</th>
-        <th>Serviço</th>
-        <th>Valor</th>
-        <th>Status</th>
-        <th>Ações</th>
-    </tr>
-
-    {% for s in servicos %}
-    <tr>
-        <td>{{ s.cliente_nome }}</td>
-        <td>{{ s.descricao }}</td>
-        <td>R$ {{ "%.2f"|format(s.valor) }}</td>
-        <td>{{ s.status }}</td>
-        <td>
-            {% if s.status == "pendente" %}
-                <a class="btn" href="/servicos/cobrar/{{ s.id }}">Cobrar</a>
-                <a class="btn" href="/servicos/pagar/{{ s.id }}">Pago</a>
-                <a class="btn" href="/servicos/editar/{{ s.id }}">Editar</a>
-                <a class="btn" href="/servicos/excluir/{{ s.id }}"
-                    onclick="return confirm('Excluir este serviço?')">
-                    🗑️ Excluir
-                    </a>
-            {% else %}
-                ✅
-            {% endif %}
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="table wrapper">    
+    <table>
+        <tr>
+            <th>Cliente</th>
+            <th>Serviço</th>
+            <th>Valor</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+    
+        {% for s in servicos %}
+        <tr>
+            <td>{{ s.cliente_nome }}</td>
+            <td>{{ s.descricao }}</td>
+            <td>R$ {{ "%.2f"|format(s.valor) }}</td>
+            <td>{{ s.status }}</td>
+            <td>
+                {% if s.status == "pendente" %}
+                    <a class="btn" href="/servicos/cobrar/{{ s.id }}">Cobrar</a>
+                    <a class="btn" href="/servicos/pagar/{{ s.id }}">Pago</a>
+                    <a class="btn" href="/servicos/editar/{{ s.id }}">Editar</a>
+                    <a class="btn" href="/servicos/excluir/{{ s.id }}"
+                        onclick="return confirm('Excluir este serviço?')">
+                        🗑️ Excluir
+                        </a>
+                {% else %}
+                    ✅
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>   
 {% endblock %}
 
 
