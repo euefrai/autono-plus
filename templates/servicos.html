@@ -39,29 +39,31 @@
                     <th>Serviço</th>
                     <th>Valor</th>
                     <th>Status</th>
-                    <th>Ações</th>
+                    <th style="text-align: center;">Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for s in servicos %}
                 <tr>
-                    <td>{{ s[5] }}</td>
+                    <td><strong>{{ s[5] }}</strong></td>
                     <td>{{ s[1] }}</td>
                     <td>R$ {{ "%.2f"|format(s[2]|float) }}</td>
                     <td>
                         <span class="status-badge {{ s[4] }}">
-                            {{ s[4]|capitalize }}
+                            {{ 'Pendente' if s[4] == 'pendente' else 'Pago' }}
                         </span>
                     </td>
-                    <td>
+                    <td class="actions-cell">
                         {% if s[4] == "pendente" %}
-                            <a class="btn btn-whatsapp" href="{{ url_for('servicos.cobrar_servico', id=s[0]) }}">Cobrar</a>
-                            <a class="btn btn-success" href="{{ url_for('servicos.pagar_servico', id=s[0]) }}">Marcar Pago</a>
-                            <a class="btn btn-edit" href="{{ url_for('servicos.editar_servico', id=s[0]) }}">Editar</a>
-                            <a class="btn btn-delete" href="{{ url_for('servicos.excluir_servico', id=s[0]) }}"
-                                onclick="return confirm('Excluir este serviço?')">🗑️</a>
+                            <div class="btn-group-mobile">
+                                <a class="btn-sm btn-whatsapp" title="Cobrar" href="{{ url_for('servicos.cobrar_servico', id=s[0]) }}">💬</a>
+                                <a class="btn-sm btn-success" title="Pago" href="{{ url_for('servicos.pagar_servico', id=s[0]) }}">✅</a>
+                                <a class="btn-sm btn-edit" title="Editar" href="{{ url_for('servicos.editar_servico', id=s[0]) }}">✏️</a>
+                                <a class="btn-sm btn-delete" title="Excluir" href="{{ url_for('servicos.excluir_servico', id=s[0]) }}"
+                                    onclick="return confirm('Excluir este serviço?')">🗑️</a>
+                            </div>
                         {% else %}
-                            <span class="done">✅ Concluído</span>
+                            <span class="done-text">Pago!</span>
                         {% endif %}
                     </td>
                 </tr>

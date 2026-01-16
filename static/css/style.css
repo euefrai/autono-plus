@@ -220,3 +220,64 @@ input, select {
         text-align: center;
     }
 }
+
+/* Celulas de Ações */
+.actions-cell {
+    text-align: center;
+    min-width: 140px; /* Garante espaço para os 4 botões */
+}
+
+.btn-group-mobile {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+/* Botões pequenos para celular */
+.btn-sm {
+    padding: 8px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 1.1rem; /* Emojis ficam melhores um pouco maiores */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+}
+
+.btn-sm:active {
+    transform: scale(0.9);
+}
+
+/* Cores dos Badges */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-badge.pendente {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.status-badge.pago {
+    background: #dcfce7;
+    color: #166534;
+}
+
+/* Botões específicos */
+.btn-whatsapp { background-color: #25D366; color: white !important; border: none; }
+.btn-success { background-color: #10b981; color: white !important; border: none; }
+.btn-edit { background-color: #f59e0b; color: white !important; border: none; }
+.btn-delete { background-color: #ef4444; color: white !important; border: none; }
+
+.done-text {
+    color: var(--success);
+    font-weight: bold;
+    font-size: 0.9rem;
+}
