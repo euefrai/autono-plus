@@ -1,15 +1,24 @@
-const toggle = document.getElementById("theme-toggle");
+const btn = document.getElementById("theme-toggle");
+const themeIcon = document.getElementById("theme-icon");
+const currentTheme = localStorage.getItem("theme");
 
-if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark");
-    toggle.innerText = "☀️ Modo claro";
+// Verifica se o usuário já tinha uma preferência salva
+if (currentTheme === "dark") {
+    document.body.classList.add("dark-theme");
+    themeIcon.innerText = "☀️";
 }
 
-toggle.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-
-    const isDark = document.body.classList.contains("dark");
-    toggle.innerText = isDark ? "☀️ Modo claro" : "🌙 Modo escuro";
-
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-});
+btn.onclick = () => {
+    document.body.classList.toggle("dark-theme");
+    
+    let theme = "light";
+    if (document.body.classList.contains("dark-theme")) {
+        theme = "dark";
+        themeIcon.innerText = "☀️";
+    } else {
+        themeIcon.innerText = "🌙";
+    }
+    
+    // Salva a escolha para a próxima página
+    localStorage.setItem("theme", theme);
+};
