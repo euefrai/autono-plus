@@ -83,3 +83,60 @@ def cobrar_servico(id):
 
     link = gerar_link_whatsapp(servico["telefone"], mensagem)
     return redirect(link)
+
+
+@servicos_bp.route("/servicos/excluir/<int:id>")
+def excluir_servico(id):
+    if "user_id" not in session:
+        return redirect("/login")
+
+    db = get_db()
+    db.execute(
+        "DELETE FROM servicos WHERE id = ? AND user_id = ?",
+        (id, session["user_id"])
+    )
+    db.commit()
+    db.close()
+
+    return redirect("/servicos")
+
+
+@servicos_bp.route("/servicos/editar/<int:id>", methods=["GET", "POST"])
+def editar_servico(id):
+    if "user_id" not in session:
+        return redirect("/login")
+
+    db = get_db()
+
+    if request.method == "POST":
+        cliente_id = request.form["cliente_id"]
+        descricao = request.form["descricao"]
+        valor = request.form["valor"]
+        data = request.form["data"]
+        status = request.form["status"]
+
+        db.execute("""
+            UPDATE servicos
+            SET cliente_id = ?, descricao = ?, valor = ?, data = ?, status = ?
+            WHERE id = ? AND user_id = ?
+        """, (cliente_id, descricao, valor, data, status, id, session["user_id"]))
+        db.commit()
+        db.close()
+        return redirect("/servicos")
+
+    servico = db.execute("""
+        SELECT * FROM servicos
+        WHERE id = ? AND user_id = ?
+    """, (id, session["user_id"])).fetchone()
+
+    clientes = db.execute(
+        "SELECT id, nome FROM clientes WHERE user_id = ?",
+        (session["user_id"],)
+    ).fetchall()
+
+    db.close()
+    return render_template(
+        "editar_servico.html",
+        servico=servico,
+        clientes=clientes
+    )
