@@ -56,14 +56,13 @@
                     <td class="actions-cell">
                         {% if s[4] == "pendente" %}
                             <div class="btn-group-mobile">
-                                <a class="btn-sm btn-whatsapp" title="Cobrar" href="{{ url_for('servicos.cobrar_servico', id=s[0]) }}">💬</a>
-                                <a class="btn-sm btn-success" title="Pago" href="{{ url_for('servicos.pagar_servico', id=s[0]) }}">✅</a>
-                                <a class="btn-sm btn-edit" title="Editar" href="{{ url_for('servicos.editar_servico', id=s[0]) }}">✏️</a>
-                                <a class="btn-sm btn-delete" title="Excluir" href="{{ url_for('servicos.excluir_servico', id=s[0]) }}"
-                                    onclick="return confirm('Excluir este serviço?')">🗑️</a>
+                                <a class="btn-sm btn-whatsapp" href="{{ url_for('servicos.cobrar_servico', id=s[0]) }}">💬</a>
+                                <a class="btn-sm btn-success" href="{{ url_for('servicos.pagar_servico', id=s[0]) }}">✅</a>
+                                <a class="btn-sm btn-edit" href="{{ url_for('servicos.editar_servico', id=s[0]) }}">✏️</a>
+                                <a class="btn-sm btn-delete" href="{{ url_for('servicos.excluir_servico', id=s[0]) }}" onclick="return confirm('Excluir?')">🗑️</a>
                             </div>
                         {% else %}
-                            <span class="done-text">Pago!</span>
+                            <span class="done-text">✅ Pago</span>
                         {% endif %}
                     </td>
                 </tr>
