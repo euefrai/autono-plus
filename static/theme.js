@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Ajusta o ícone inicial com base no tema carregado
     if (document.body.classList.contains("dark-theme")) {
-        if (themeIcon) themeIcon.innerText = "☀️";
+        if (themeIcon) themeIcon.innerText = "☀️light";
     }
 
     if (btn) {
