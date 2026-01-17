@@ -21,9 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
             let theme = "light";
             if (document.body.classList.contains("dark-theme")) {
                 theme = "dark";
-                if (themeIcon) themeIcon.innerText = "☀️";
+                if (themeIcon) themeIcon.innerText = "☀️light";
             } else {
-                if (themeIcon) themeIcon.innerText = "🌙";
+                if (themeIcon) themeIcon.innerText = "🌙dark";
             }
             
             localStorage.setItem("theme", theme);
