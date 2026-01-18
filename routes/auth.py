@@ -22,19 +22,14 @@ def login():
 
         # Verificamos se o usuário existe e a senha bate
         if user and check_password_hash(user[2], senha):
-            # Salva os dados na sessão acessando pelos índices da tupla
-            # user[0]=id, user[1]=nome, user[2]=senha, user[3]=role, user[4]=plan
-            session["user_id"] = user[0]
-            session["nome"] = user[1]
-            session["role"] = user[3]
-            session["plan"] = user[4] if len(user) > 4 else "free"
             
-            # Também salvamos o dicionário 'user' se você usar assim em outras partes
             session["user"] = {
-                "id": user[0],
-                "nome": user[1],
-                "email": email,
-                "plan": user[4] if len(user) > 4 else "free"
+                "id": user["id"],
+                "nome": user.get("nome"),
+                "email": user.get("email"),
+                "plan": user.get("plan", "free")
+            }
+
             }
 
             return redirect(url_for("dashboard.dashboard"))
