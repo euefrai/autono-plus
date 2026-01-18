@@ -25,3 +25,8 @@ def upgrade_success():
     session["user"] = user
 
     return redirect(url_for("dashboard.index"))
+
+@billing.route("/precos")
+def precos():
+    user = session.get("user")
+    return render_template("precos.html", user=user)

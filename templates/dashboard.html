@@ -16,14 +16,11 @@
     </div>
 </div>
 
-    <p>
-    Planos: {{ total_planos }}/1
-    {% if user.plan == "free" %}
-        (Free)
-    {% else %}
-        (Premium)
+    {% if user and user.plan == "free" %}
+    <p>Plano Free</p>
+    {% elif user and user.plan == "premium" %}
+    <p>Plano Premium</p>
     {% endif %}
-    </p>
 
 {% endblock %}
 

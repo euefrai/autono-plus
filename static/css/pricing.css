@@ -1,0 +1,62 @@
+.pricing {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.pricing-cards {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: #111;
+  border-radius: 12px;
+  padding: 30px;
+  width: 280px;
+  border: 1px solid #222;
+}
+
+.card h2 {
+  margin-bottom: 10px;
+}
+
+.price {
+  font-size: 28px;
+  margin: 15px 0;
+}
+
+.card ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.card ul li {
+  margin: 10px 0;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: 8px;
+  background: #444;
+  color: #fff;
+  text-decoration: none;
+}
+
+.btn.highlight {
+  background: #6c63ff;
+}
+
+.btn.disabled {
+  background: #222;
+  cursor: not-allowed;
+}
+
+.guarantee {
+  margin-top: 30px;
+  color: #aaa;
+}
