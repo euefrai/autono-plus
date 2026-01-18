@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, session, url_for
-from db import get_db
+from utils.db import get_db
+
 
 servicos_bp = Blueprint("servicos", __name__)
 
