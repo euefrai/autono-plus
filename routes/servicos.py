@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, session, url_for, flash
 import urllib.parse
-from utils.db import get_db
+from db import get_db
 from utils.plan_limits import FREE_LIMITS
 
 servicos_bp = Blueprint("servicos", __name__)

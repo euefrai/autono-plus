@@ -1,11 +1,11 @@
 from db import get_db
 
-def count_clients_by_user(user_id):
+def count_planos_by_user(user_id):
     db = get_db()
     cursor = db.cursor()
 
     cursor.execute(
-        "SELECT COUNT(*) FROM clientes WHERE user_id = ?",
+        "SELECT COUNT(*) FROM planos WHERE user_id = ?",
         (user_id,)
     )
 

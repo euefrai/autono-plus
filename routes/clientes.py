@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, session, url_for, flash
-from utils.db import get_db
+from db import get_db
 from utils.permissions import can_create_client
 from models.client import count_clients_by_user
 

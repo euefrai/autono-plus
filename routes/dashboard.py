@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, session, redirect, url_for
-from utils.db import get_db
+from db import get_db
 
 dashboard_bp = Blueprint("dashboard", __name__)
 
