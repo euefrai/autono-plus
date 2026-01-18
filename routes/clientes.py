@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, session, url_for, flash
 from db import get_db
 from utils.permissions import can_create_client
-from models.client import count_clients_by_user
+from models.cliente import count_clients_by_user
 
 clientes_bp = Blueprint("clientes", __name__)
 

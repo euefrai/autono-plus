@@ -15,6 +15,16 @@
         <p>R$ {{ "%.2f"|format(pendente) }}</p>
     </div>
 </div>
+
+    <p>
+    Planos: {{ total_planos }}/1
+    {% if user.plan == "free" %}
+        (Free)
+    {% else %}
+        (Premium)
+    {% endif %}
+    </p>
+
 {% endblock %}
 
 
