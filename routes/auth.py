@@ -30,8 +30,6 @@ def login():
                 "plan": user.get("plan", "free")
             }
 
-            }
-
             return redirect(url_for("dashboard.dashboard"))
         
         else:
