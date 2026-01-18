@@ -1,13 +1,24 @@
-from flask import Blueprint, render_template, session, redirect, url_for
+from flask import Blueprint, render_template, session, redirect, url_for, abort
 from utils.db import get_db
 
 admin_bp = Blueprint("admin", __name__)
 
-# Função auxiliar para verificar se é admin e evitar repetição de código
+# =========================================
+# FUNÇÃO AUXILIAR
+# =========================================
 def verificar_admin():
-    if session.get("role") != "admin":
+    """Verifica se o usuário está logado e se possui cargo de admin"""
+    if not session.get("user_id"):
         return redirect(url_for("auth.login"))
+    
+    # Verifica tanto o 'role' quanto o 'is_admin' conforme sua estrutura
+    if session.get("role") != "admin":
+        abort(403) # Retorna "Acesso Proibido" se não for admin
     return None
+
+# =========================================
+# ROTAS DO PAINEL ADMIN
+# =========================================
 
 @admin_bp.route("/admin")
 def admin_dashboard():
@@ -41,12 +52,12 @@ def excluir_usuario(id):
     cur = conn.cursor()
 
     try:
-        # No PostgreSQL/Supabase usamos %s em vez de ?
+        # No PostgreSQL/Supabase usamos %s
         cur.execute("DELETE FROM servicos WHERE user_id = %s", (id,))
         cur.execute("DELETE FROM clientes WHERE user_id = %s", (id,))
         cur.execute("DELETE FROM usuarios WHERE id = %s", (id,))
 
-        # Registro de log usando a sintaxe correta do Postgres (NOW())
+        # Registro de log
         cur.execute(
             "INSERT INTO logs (acao, usuario_id, data) VALUES (%s, %s, NOW())",
             ("Usuário excluído", id)
