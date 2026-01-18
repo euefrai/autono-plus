@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, session, url_for
+from flask import Blueprint, render_template, request, redirect, session, url_for, flash
+import urllib.parse
 from utils.db import get_db
-
+from utils.plan_limits import FREE_LIMITS
 
 servicos_bp = Blueprint("servicos", __name__)
 
@@ -14,6 +15,17 @@ def servicos():
 
     # CADASTRAR SERVIÇO
     if request.method == "POST":
+        # Verificação de Limites do Plano
+        cur.execute("SELECT count(*) FROM servicos WHERE user_id = %s", (session["user_id"],))
+        total_servicos = cur.fetchone()[0]
+        
+        # Pega o plano da sessão (certifique-se de salvar no login)
+        user_plan = session.get("plan", "free")
+
+        if user_plan == "free" and total_servicos >= FREE_LIMITS.get("services", 10):
+            flash("🔒 Limite do plano Free atingido. Faça upgrade.", "warning")
+            return redirect(url_for("billing.upgrade"))
+
         cliente_id = request.form["cliente_id"]
         descricao = request.form["descricao"]
         valor = request.form["valor"]
@@ -44,7 +56,6 @@ def servicos():
     conn.close()
     return render_template("servicos.html", servicos=servicos_lista, clientes=clientes_lista)
 
-
 @servicos_bp.route("/servicos/pagar/<int:id>")
 def pagar_servico(id):
     if "user_id" not in session:
@@ -61,8 +72,6 @@ def pagar_servico(id):
     conn.close()
 
     return redirect(url_for("servicos.servicos"))
-
-import urllib.parse
 
 @servicos_bp.route("/servicos/cobrar/<int:id>")
 def cobrar_servico(id):
@@ -82,14 +91,10 @@ def cobrar_servico(id):
     conn.close()
 
     if servico:
-        # 1. Limpa o telefone: remove ( ), -, espaços e mantém só números
         telefone_limpo = "".join(filter(str.isdigit, servico[3]))
-        
-        # 2. Garante que tem o 55 (Brasil) na frente
         if not telefone_limpo.startswith("55"):
             telefone_limpo = "55" + telefone_limpo
         
-        # 3. Formata a mensagem
         valor_formatado = f"{float(servico[0]):.2f}"
         mensagem = (
             f"Olá {servico[2]} 😊\n"
@@ -97,16 +102,11 @@ def cobrar_servico(id):
             f"Valor: R$ {valor_formatado}\n"
             "Qualquer dúvida fico à disposição!"
         )
-        
-        # 4. Codifica a mensagem para URL (transforma espaços em %20, etc)
         msg_encoded = urllib.parse.quote(mensagem)
-        
-        # 5. Redireciona usando o wa.me (mais rápido no celular)
         link = f"https://wa.me/{telefone_limpo}?text={msg_encoded}"
         return redirect(link)
     
     return redirect(url_for("servicos.servicos"))
-
 
 @servicos_bp.route("/servicos/excluir/<int:id>")
 def excluir_servico(id):
@@ -124,7 +124,6 @@ def excluir_servico(id):
     conn.close()
 
     return redirect(url_for("servicos.servicos"))
-
 
 @servicos_bp.route("/servicos/editar/<int:id>", methods=["GET", "POST"])
 def editar_servico(id):
@@ -151,11 +150,9 @@ def editar_servico(id):
         conn.close()
         return redirect(url_for("servicos.servicos"))
 
-    # Busca dados do serviço para preencher o formulário
     cur.execute("SELECT * FROM servicos WHERE id = %s AND user_id = %s", (id, session["user_id"]))
     servico = cur.fetchone()
 
-    # Busca clientes para o select
     cur.execute("SELECT id, nome FROM clientes WHERE user_id = %s", (session["user_id"],))
     clientes = cur.fetchall()
 

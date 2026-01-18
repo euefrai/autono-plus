@@ -1,5 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, session, url_for
+from flask import Blueprint, render_template, request, redirect, session, url_for, flash
 from utils.db import get_db
+from utils.permissions import can_create_client
+from models.client import count_clients_by_user
 
 clientes_bp = Blueprint("clientes", __name__)
 
@@ -13,13 +15,25 @@ def clientes():
 
     # CRIAR CLIENTE
     if request.method == "POST":
+        user_id = session.get("user_id")
+        user_plan = session.get("plan", "free")
+        
+        # Simula objeto user para a permissão
+        user = {"id": user_id, "plan": user_plan}
+        
+        # Verifica limite do plano antes de inserir
+        total_clients = count_clients_by_user(user_id)
+        if not can_create_client(user, total_clients):
+            flash("🔒 Limite do plano Free atingido. Faça upgrade para continuar.", "warning")
+            return redirect(url_for("billing.upgrade"))
+
         nome = request.form["nome"]
         telefone = request.form["telefone"]
         observacao = request.form["observacao"]
 
         cur.execute(
             "INSERT INTO clientes (user_id, nome, telefone, observacao) VALUES (%s, %s, %s, %s)",
-            (session["user_id"], nome, telefone, observacao)
+            (user_id, nome, telefone, observacao)
         )
         conn.commit()
 
@@ -28,11 +42,11 @@ def clientes():
         "SELECT id, nome, telefone, observacao FROM clientes WHERE user_id = %s",
         (session["user_id"],)
     )
-    clientes = cur.fetchall()
+    clientes_lista = cur.fetchall()
 
     cur.close()
     conn.close()
-    return render_template("clientes.html", clientes=clientes)
+    return render_template("clientes.html", clientes=clientes_lista)
 
 @clientes_bp.route("/clientes/excluir/<int:id>")
 def excluir_cliente(id):
@@ -48,7 +62,6 @@ def excluir_cliente(id):
             "DELETE FROM servicos WHERE cliente_id = %s AND user_id = %s",
             (id, session["user_id"])
         )
-
         # Exclui o cliente
         cur.execute(
             "DELETE FROM clientes WHERE id = %s AND user_id = %s",
@@ -87,6 +100,7 @@ def editar_cliente(id):
         conn.close()
         return redirect(url_for("clientes.clientes"))
 
+    # Busca dados para o formulário de edição
     cur.execute("""
         SELECT id, nome, telefone, observacao FROM clientes
         WHERE id = %s AND user_id = %s
