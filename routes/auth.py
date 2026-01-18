@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, session, flash, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from db import get_db
+from db import get_db  # kkkkk to trocando os bancos direto kakakskska
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -11,28 +11,38 @@ def login():
         senha = request.form.get("senha")
 
         conn = get_db()
-        cur = conn.cursor() # Necessário para PostgreSQL
+        cur = conn.cursor()
         
-        # Mudamos de '?' para '%s'
-        cur.execute("SELECT id, nome, senha, role FROM usuarios WHERE email = %s", (email,))
+        # Selecionamos os campos necessários
+        cur.execute("SELECT id, nome, senha, role, plan FROM usuarios WHERE email = %s", (email,))
         user = cur.fetchone()
         
         cur.close()
         conn.close()
 
-    # Verificamos se o usuário existe (user não é None)
-        if user and check_password_hash(user[2], senha): # user[2] é a senha no SELECT acima
+        # Verificamos se o usuário existe e a senha bate
+        if user and check_password_hash(user[2], senha):
+            # Salva os dados na sessão acessando pelos índices da tupla
+            # user[0]=id, user[1]=nome, user[2]=senha, user[3]=role, user[4]=plan
             session["user_id"] = user[0]
-            session["user_nome"] = user[1]
-            session["role"] = user[3] if len(user) > 3 else "user"
+            session["nome"] = user[1]
+            session["role"] = user[3]
+            session["plan"] = user[4] if len(user) > 4 else "free"
             
-            return redirect(url_for("dashboard.dashboard")) # Use url_for por segurança
+            # Também salvamos o dicionário 'user' se você usar assim em outras partes
+            session["user"] = {
+                "id": user[0],
+                "nome": user[1],
+                "email": email,
+                "plan": user[4] if len(user) > 4 else "free"
+            }
+
+            return redirect(url_for("dashboard.dashboard"))
         
         else:
             flash("Email ou senha inválidos", "danger")
 
     return render_template("auth/login.html")
-
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
@@ -44,23 +54,23 @@ def register():
         conn = get_db()
         cur = conn.cursor()
         try:
-            # Mudamos de '?' para '%s'
+            # Inserindo com os campos padrão
             cur.execute(
-                "INSERT INTO usuarios (nome, email, senha, role) VALUES (%s, %s, %s, %s)",
-                (nome, email, senha_hash, "user")
+                "INSERT INTO usuarios (nome, email, senha, role, plan) VALUES (%s, %s, %s, %s, %s)",
+                (nome, email, senha_hash, "user", "free")
             )
             conn.commit()
             flash("Cadastro realizado com sucesso!", "success")
             return redirect(url_for("auth.login"))
         except Exception as e:
             conn.rollback()
+            print(f"Erro no registro: {e}")
             flash("Erro ao cadastrar: Email já existe ou problema no servidor.", "danger")
         finally:
             cur.close()
             conn.close()
 
     return render_template("auth/register.html")
-
 
 @auth_bp.route("/logout")
 def logout():
