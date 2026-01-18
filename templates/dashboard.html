@@ -1,30 +1,112 @@
-<h1>Olá, {{ nome }} 👋</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% extends "base.html" %}
 
-{% extends "base.html" %}
 {% block title %}Dashboard | Autono+{% endblock %}
 
 {% block content %}
-<div class="cards">
-    <div class="card">
-        <h3>Total faturado</h3>
-        <p>R$ {{ "%.2f"|format(total) }}</p>
+<div class="container">
+    <div class="header-flex">
+        <h1>Olá, {{ nome }} 👋</h1>
+        
+        <div class="plan-status">
+            {% if session.get('plan') == 'free' %}
+                <span class="badge-limit">Plano Free</span>
+            {% else %}
+                <span class="badge-premium">✨ Plano Premium</span>
+            {% endif %}
+        </div>
     </div>
 
-    <div class="card">
-        <h3>Pendente</h3>
-        <p>R$ {{ "%.2f"|format(pendente) }}</p>
+    <div class="cards">
+        <div class="card card-total">
+            <h3>Total faturado</h3>
+            <p class="value">R$ {{ "%.2f"|format(total) }}</p>
+        </div>
+
+        <div class="card card-pendente">
+            <h3>A receber (Pendente)</h3>
+            <p class="value">R$ {{ "%.2f"|format(pendente) }}</p>
+        </div>
+    </div>
+
+    <div class="dashboard-nav">
+        <a href="{{ url_for('clientes.clientes') }}" class="btn-nav">👥 Clientes</a>
+        <a href="{{ url_for('servicos.servicos') }}" class="btn-nav">🛠️ Serviços</a>
+        <a href="{{ url_for('auth.logout') }}" class="btn-nav btn-logout">🚪 Sair</a>
     </div>
 </div>
 
-    {% if user and user.plan == "free" %}
-    <p>Plano Free</p>
-    {% elif user and user.plan == "premium" %}
-    <p>Plano Premium</p>
-    {% endif %}
+<style>
+    .header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
 
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .card {
+        background: var(--bg-card);
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px var(--shadow);
+        border: 1px solid var(--border);
+    }
+
+    .card h3 {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .card .value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-top: 10px;
+        color: var(--text-main);
+    }
+
+    .card-total .value { color: var(--success); }
+    .card-pendente .value { color: #f59e0b; }
+
+    .dashboard-nav {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .btn-nav {
+        background: var(--bg-card);
+        padding: 15px 25px;
+        border-radius: 15px;
+        text-decoration: none;
+        color: var(--text-main);
+        font-weight: 600;
+        border: 1px solid var(--border);
+        transition: 0.3s;
+    }
+
+    .btn-nav:hover {
+        border-color: var(--primary);
+        transform: translateY(-3px);
+    }
+
+    .btn-logout { color: var(--danger); }
+</style>
 {% endblock %}
-
-
-<a href="/clientes">Clientes</a> |
-<a href="/servicos">Serviços</a> |
-<a href="/logout">Sair</a>
+</body>
+</html>
