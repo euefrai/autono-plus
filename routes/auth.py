@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, session, flash, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from db import get_db  # kkkkk to trocando os bancos direto kakakskska
+from db import get_db 
+import psycopg2.extras
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -11,27 +12,32 @@ def login():
         senha = request.form.get("senha")
 
         conn = get_db()
-        cur = conn.cursor()
+        # Usamos o RealDictCursor para poder acessar os dados como user['nome'] em vez de user[1]
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
-        # Selecionamos os campos necessários
-        cur.execute("SELECT id, nome, senha, role, plan FROM usuarios WHERE email = %s", (email,))
-        user = cur.fetchone()
-        
-        cur.close()
-        conn.close()
+        try:
+            cur.execute("SELECT id, nome, senha, role, plan FROM usuarios WHERE email = %s", (email,))
+            user = cur.fetchone()
+        finally:
+            cur.close()
+            conn.close()
 
-        # Verificamos se o usuário existe e a senha bate
-        if user and check_password_hash(user[2], senha):
+        # Agora 'user' é um dicionário. Verificamos a senha:
+        if user and check_password_hash(user['senha'], senha):
+            # Salvamos os dados na sessão de forma organizada
+            session["user_id"] = user['id']
+            session["plan"] = user.get('plan', 'free')
+            session["nome"] = user['nome']
             
+            # Dicionário completo para facilitar no dashboard
             session["user"] = {
-                "id": user["id"],
-                "nome": user.get("nome"),
-                "email": user.get("email"),
-                "plan": user.get("plan", "free")
+                "id": user['id'],
+                "nome": user['nome'],
+                "email": email,
+                "plan": user.get('plan', 'free')
             }
 
             return redirect(url_for("dashboard.dashboard"))
-        
         else:
             flash("Email ou senha inválidos", "danger")
 
@@ -47,7 +53,7 @@ def register():
         conn = get_db()
         cur = conn.cursor()
         try:
-            # Inserindo com os campos padrão
+            # Garante que o usuário novo sempre comece como 'user' e plano 'free'
             cur.execute(
                 "INSERT INTO usuarios (nome, email, senha, role, plan) VALUES (%s, %s, %s, %s, %s)",
                 (nome, email, senha_hash, "user", "free")
