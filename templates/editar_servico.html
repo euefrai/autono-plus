@@ -1,34 +1,91 @@
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 {% extends "base.html" %}
+
 {% block title %}Editar Serviço | Autono+{% endblock %}
 
 {% block content %}
-<h2>Editar Serviço</h2>
 
-<form method="post">
-    <select name="cliente_id">
-        {% for c in clientes %}
-        <option value="{{ c.id }}"
-            {% if c.id == servico.cliente_id %}selected{% endif %}>
-            {{ c.nome }}
-        </option>
-        {% endfor %}
-    </select>
+<div class="page-header animate-fade">
+    <h2>Editar Serviço</h2>
+    <p class="text-muted">
+        Atualize os dados do serviço realizado.
+    </p>
+</div>
 
-    <input name="descricao" value="{{ servico.descricao }}" required>
-    <input name="valor" type="number" step="0.01" value="{{ servico.valor }}">
-    <input name="data" type="date" value="{{ servico.data }}">
+<section class="form-section animate-slide">
+    <form method="post" class="card">
 
-    <select name="status">
-        <option value="pendente" {% if servico.status == 'pendente' %}selected{% endif %}>
-            Pendente
-        </option>
-        <option value="pago" {% if servico.status == 'pago' %}selected{% endif %}>
-            Pago
-        </option>
-    </select>
+        <!-- CLIENTE -->
+        <div class="form-group">
+            <label>Cliente</label>
+            <select name="cliente_id" required>
+                {% for c in clientes %}
+                    <option value="{{ c.id }}"
+                        {% if c.id == servico.cliente_id %}selected{% endif %}>
+                        {{ c.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
 
-    <button>Salvar alterações</button>
-</form>
+        <!-- DESCRIÇÃO -->
+        <div class="form-group">
+            <label>Descrição</label>
+            <input
+                name="descricao"
+                value="{{ servico.descricao }}"
+                required
+            >
+        </div>
+
+        <!-- VALOR -->
+        <div class="form-group">
+            <label>Valor (R$)</label>
+            <input
+                name="valor"
+                type="number"
+                step="0.01"
+                value="{{ servico.valor }}"
+            >
+        </div>
+
+        <!-- DATA -->
+        <div class="form-group">
+            <label>Data</label>
+            <input
+                name="data"
+                type="date"
+                value="{{ servico.data }}"
+            >
+        </div>
+
+        <!-- STATUS -->
+        <div class="form-group">
+            <label>Status</label>
+            <select name="status">
+                <option value="pendente"
+                    {% if servico.status == "pendente" %}selected{% endif %}>
+                    Pendente
+                </option>
+                <option value="pago"
+                    {% if servico.status == "pago" %}selected{% endif %}>
+                    Pago
+                </option>
+            </select>
+        </div>
+
+        <!-- AÇÕES -->
+        <div class="form-actions">
+            <button type="submit" class="btn-primary hover-scale">
+                💾 Salvar alterações
+            </button>
+
+            <a href="{{ url_for('servicos.servicos') }}"
+               class="btn-back hover-scale">
+                Cancelar
+            </a>
+        </div>
+
+    </form>
+</section>
+
 {% endblock %}

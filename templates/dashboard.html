@@ -1,112 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-</head>
-<body>
-    {% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Dashboard | Autono+{% endblock %}
 
 {% block content %}
-<div class="container">
+
+<!-- HEADER -->
+<div class="page-header animate-fade">
     <div class="header-flex">
         <h1>Olá, {{ nome }} 👋</h1>
-        
-        <div class="plan-status">
-            {% if session.get('plan') == 'free' %}
-                <span class="badge-limit">Plano Free</span>
-            {% else %}
-                <span class="badge-premium">✨ Plano Premium</span>
-            {% endif %}
-        </div>
-    </div>
 
-    <div class="cards">
-        <div class="card card-total">
-            <h3>Total faturado</h3>
-            <p class="value">R$ {{ "%.2f"|format(total) }}</p>
-        </div>
-
-        <div class="card card-pendente">
-            <h3>A receber (Pendente)</h3>
-            <p class="value">R$ {{ "%.2f"|format(pendente) }}</p>
-        </div>
-    </div>
-
-    <div class="dashboard-nav">
-        <a href="{{ url_for('clientes.clientes') }}" class="btn-nav">👥 Clientes</a>
-        <a href="{{ url_for('servicos.servicos') }}" class="btn-nav">🛠️ Serviços</a>
-        <a href="{{ url_for('auth.logout') }}" class="btn-nav btn-logout">🚪 Sair</a>
+        {% if user.plan == "premium" %}
+            <span class="badge-premium">✨ Plano Premium</span>
+        {% else %}
+            <span class="badge-limit">Plano Free</span>
+        {% endif %}
     </div>
 </div>
 
-<style>
-    .header-flex {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-    }
+<!-- CTA PREMIUM (SÓ PARA FREE) -->
+{% if user.plan == "free" %}
+<div class="upgrade-box animate-slide">
+    <p>
+        Você está no <strong>Plano Free</strong>.
+        Desbloqueie relatórios completos e recursos ilimitados.
+    </p>
+    <a href="/precos" class="btn highlight pulse">
+        Virar Premium 🚀
+    </a>
+</div>
+{% endif %}
 
-    .cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
+<!-- CARDS -->
+<div class="cards">
 
-    .card {
-        background: var(--bg-card);
-        padding: 25px;
-        border-radius: 20px;
-        box-shadow: 0 10px 20px var(--shadow);
-        border: 1px solid var(--border);
-    }
+    <div class="card card-total animate-fade">
+        <h3>Total faturado</h3>
+        <p class="value success">
+            R$ {{ "%.2f"|format(total) }}
+        </p>
+    </div>
 
-    .card h3 {
-        font-size: 0.9rem;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
+    <div class="card card-pendente animate-fade delay-1">
+        <h3>A receber</h3>
+        <p class="value warning">
+            R$ {{ "%.2f"|format(pendente) }}
+        </p>
+    </div>
 
-    .card .value {
-        font-size: 1.8rem;
-        font-weight: 800;
-        margin-top: 10px;
-        color: var(--text-main);
-    }
+</div>
 
-    .card-total .value { color: var(--success); }
-    .card-pendente .value { color: #f59e0b; }
+<!-- NAVEGAÇÃO -->
+<div class="dashboard-nav animate-slide">
+    <a href="{{ url_for('clientes.clientes') }}" class="btn-nav hover-scale">
+        👥 Clientes
+    </a>
 
-    .dashboard-nav {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
+    <a href="{{ url_for('servicos.servicos') }}" class="btn-nav hover-scale">
+        🛠️ Serviços
+    </a>
 
-    .btn-nav {
-        background: var(--bg-card);
-        padding: 15px 25px;
-        border-radius: 15px;
-        text-decoration: none;
-        color: var(--text-main);
-        font-weight: 600;
-        border: 1px solid var(--border);
-        transition: 0.3s;
-    }
+    <a href="{{ url_for('auth.logout') }}" class="btn-nav btn-logout hover-scale">
+        🚪 Sair
+    </a>
+</div>
 
-    .btn-nav:hover {
-        border-color: var(--primary);
-        transform: translateY(-3px);
-    }
-
-    .btn-logout { color: var(--danger); }
-</style>
 {% endblock %}
-</body>
-</html>

@@ -1,85 +1,117 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serviços | Autono+</title>
-</head>
-<body>
-    {% extends "base.html" %}
+{% extends "base.html" %}
+
 {% block title %}Serviços | Autono+{% endblock %}
 
 {% block content %}
-<div class="container">
+
+<div class="page-header animate-fade">
     <h2>Serviços</h2>
-
-    <section class="form-section">
-        <form method="post" class="card">
-            <select name="cliente_id" required>
-                <option value="">Selecione o Cliente</option>
-                {% for c in clientes %}
-                    <option value="{{ c[0] }}">{{ c[1] }}</option>
-                {% endfor %}
-            </select>
-
-            <input name="descricao" placeholder="Descrição do serviço" required>
-            <input name="valor" type="number" step="0.01" placeholder="Valor">
-            <input name="data" type="date" required>
-
-            <button type="submit" class="btn-primary">Registrar serviço</button>
-        </form>
-    </section>
-
-    <hr>
-
-    <div class="table-wrapper">    
-        <table>
-            <thead>
-                <tr>
-                    <th>Cliente</th>
-                    <th>Serviço</th>
-                    <th>Valor</th>
-                    <th>Status</th>
-                    <th style="text-align: center;">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for s in servicos %}
-                <tr>
-                    <td><strong>{{ s[5] }}</strong></td>
-                    <td>{{ s[1] }}</td>
-                    <td>R$ {{ "%.2f"|format(s[2]|float) }}</td>
-                    <td>
-                        <span class="status-badge {{ s[4] }}">
-                            {{ 'Pendente' if s[4] == 'pendente' else 'Pago' }}
-                        </span>
-                    </td>
-                    <td class="actions-cell">
-                        {% if s[4] == "pendente" %}
-                            <div class="btn-group-mobile">
-                                <a class="btn-sm btn-whatsapp" href="{{ url_for('servicos.cobrar_servico', id=s[0]) }}">💬</a>
-                                <a class="btn-sm btn-success" href="{{ url_for('servicos.pagar_servico', id=s[0]) }}">✅</a>
-                                <a class="btn-sm btn-edit" href="{{ url_for('servicos.editar_servico', id=s[0]) }}">✏️</a>
-                                <a class="btn-sm btn-delete" href="{{ url_for('servicos.excluir_servico', id=s[0]) }}" onclick="return confirm('Excluir?')">🗑️</a>
-                            </div>
-                        {% else %}
-                            <span class="done-text">✅ Pago</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <div class="actions">
-        <br>
-        <a href="{{ url_for('dashboard.dashboard') }}" class="btn-back">← Voltar ao Dashboard</a>
-    </div>
 </div>
+
+<!-- FORMULÁRIO -->
+<section class="form-section animate-slide">
+    <form method="post" class="card">
+
+        {% if user.plan == "premium" or total_servicos < 3 %}
+
+            <div class="form-group">
+                <label>Cliente</label>
+                <select name="cliente_id" required>
+                    <option value="">Selecione o cliente</option>
+                    {% for c in clientes %}
+                        <option value="{{ c[0] }}">{{ c[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Descrição do serviço</label>
+                <input name="descricao" placeholder="Descrição do serviço" required>
+            </div>
+
+            <div class="form-group">
+                <label>Valor (R$)</label>
+                <input name="valor" type="number" step="0.01" placeholder="0,00">
+            </div>
+
+            <div class="form-group">
+                <label>Data</label>
+                <input name="data" type="date" required>
+            </div>
+
+            <button type="submit" class="btn-primary hover-scale">
+                + Registrar serviço
+            </button>
+
+        {% else %}
+            <!-- BLOQUEIO FREE -->
+            <div class="locked-box">
+                <p>🔒 Limite do plano Free atingido</p>
+                <a href="/precos" class="btn highlight pulse">
+                    Fazer upgrade
+                </a>
+            </div>
+        {% endif %}
+
+    </form>
+</section>
+
+<hr class="divider">
+
+<!-- TABELA -->
+<div class="table-wrapper animate-fade">
+    <table>
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Serviço</th>
+                <th>Valor</th>
+                <th>Status</th>
+                <th style="text-align:center;">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in servicos %}
+            <tr>
+                <td><strong>{{ s[5] }}</strong></td>
+                <td>{{ s[1] }}</td>
+                <td>R$ {{ "%.2f"|format(s[2]|float) }}</td>
+                <td>
+                    <span class="status-badge {{ s[4] }}">
+                        {{ 'Pendente' if s[4] == 'pendente' else 'Pago' }}
+                    </span>
+                </td>
+                <td class="actions-cell">
+                    {% if s[4] == "pendente" %}
+                        <div class="btn-group-mobile">
+                            <a class="btn-sm btn-whatsapp hover-scale"
+                               href="{{ url_for('servicos.cobrar_servico', id=s[0]) }}">💬</a>
+
+                            <a class="btn-sm btn-success hover-scale"
+                               href="{{ url_for('servicos.pagar_servico', id=s[0]) }}">✅</a>
+
+                            <a class="btn-sm btn-edit hover-scale"
+                               href="{{ url_for('servicos.editar_servico', id=s[0]) }}">✏️</a>
+
+                            <a class="btn-sm btn-delete hover-scale"
+                               href="{{ url_for('servicos.excluir_servico', id=s[0]) }}"
+                               onclick="return confirm('Excluir este serviço?')">🗑️</a>
+                        </div>
+                    {% else %}
+                        <span class="done-text">✅ Pago</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- VOLTAR -->
+<div class="actions animate-slide">
+    <a href="{{ url_for('dashboard.dashboard') }}" class="btn-back hover-scale">
+        ← Voltar ao Dashboard
+    </a>
+</div>
+
 {% endblock %}
-
-
-    <br>
-    <a href="/dashboard">Voltar</a>
-</body>
-</html>

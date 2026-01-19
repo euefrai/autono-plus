@@ -79,6 +79,15 @@
             font-weight: 600;
         }
     </style>
+    <div class="plan-badge">
+  {% if user and user.plan == "premium" %}
+    <span class="badge premium">Premium 🚀</span>
+  {% else %}
+    <span class="badge free">Free</span>
+    <a href="/precos" class="upgrade-link">Fazer upgrade</a>
+  {% endif %}
+</div>
+
 </head>
 <body>
 

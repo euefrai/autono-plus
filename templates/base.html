@@ -3,34 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>{% block title %}Autono+{% endblock %}</title>
+
+    <!-- CSS base -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- CSS animações (vamos criar já já) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body> <nav class="navbar">
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
         <div class="nav-container">
-            <a href="/dashboard" class="brand">Autono<span>+</span></a>
-            
+
+            <!-- Brand -->
+            <a href="/dashboard" class="brand animate-fade">
+                Autono<span>+</span>
+            </a>
+
+            <!-- Links -->
             <div class="nav-links">
+
                 <a href="/dashboard" class="nav-item">Dashboard</a>
                 <a href="/clientes" class="nav-item">Clientes</a>
                 <a href="/servicos" class="nav-item">Serviços</a>
-                
+
+                <!-- STATUS DO PLANO -->
+                <div class="plan-badge animate-slide">
+                    {% if user and user.plan == "premium" %}
+                        <span class="badge premium">Premium 🚀</span>
+                    {% else %}
+                        <span class="badge free">Free</span>
+                        <a href="/precos" class="upgrade-link pulse">
+                            Fazer upgrade
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!-- Ações -->
                 <div class="nav-actions">
-                    <button id="theme-toggle" class="btn-icon">
+                    <button id="theme-toggle" class="btn-icon hover-scale">
                         <span id="theme-icon">🌙</span>
                     </button>
-                    <a href="/logout" class="btn-logout">Sair</a>
+                    <a href="/logout" class="btn-logout hover-scale">Sair</a>
                 </div>
+
             </div>
         </div>
     </nav>
 
-    <main class="container">
+    <!-- CONTEÚDO -->
+    <main class="container animate-page">
         {% block content %}{% endblock %}
     </main>
-    
+
+    <!-- JS -->
     <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
 
 </body>
 </html>
