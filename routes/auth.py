@@ -8,40 +8,38 @@ auth_bp = Blueprint("auth", __name__)
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form.get("email")
-        senha = request.form.get("senha")
+        email = request.form["email"]
+        senha = request.form["senha"]
 
         conn = get_db()
-        # Usamos o RealDictCursor para poder acessar os dados como user['nome'] em vez de user[1]
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        
+
         try:
-            cur.execute("SELECT id, nome, senha, role, plan FROM usuarios WHERE email = %s", (email,))
+            cur.execute(
+                "SELECT id, nome, email, plan, senha FROM users WHERE email = %s",
+                (email,)
+            )
             user = cur.fetchone()
+
+            if not user or user["senha"] != senha:
+                return render_template("login.html", erro="Login inválido")
+
+            # ✅ SALVA USUÁRIO COMO DICT NA SESSÃO
+            session["user"] = {
+                "id": user["id"],
+                "nome": user["nome"],
+                "email": user["email"],
+                "plan": user["plan"]
+            }
+
+            return redirect(url_for("dashboard.dashboard"))
+
         finally:
             cur.close()
             conn.close()
 
-        # Agora 'user' é um dicionário. Verificamos a senha:
-        if user and check_password_hash(user['senha'], senha):
-            # Salvamos os dados na sessão de forma organizada
-            session["user_id"] = user['id']
-            session["plan"] = user.get('plan', 'free')
-            session["nome"] = user['nome']
-            
-            # Dicionário completo para facilitar no dashboard
-            session["user"] = {
-                "id": user['id'],
-                "nome": user['nome'],
-                "email": email,
-                "plan": user.get('plan', 'free')
-            }
+    return render_template("login.html")
 
-            return redirect(url_for("dashboard.dashboard"))
-        else:
-            flash("Email ou senha inválidos", "danger")
-
-    return render_template("auth/login.html")
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
