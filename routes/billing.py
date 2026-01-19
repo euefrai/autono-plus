@@ -80,12 +80,6 @@ def upgrade_success():
 
     return redirect(url_for("dashboard.dashboard"))
 
-@billing_bp.route("/precos")
-def precos():
-    user = session.get("user")
-    return render_template("precos.html", user=user)
-
-
 
 @billing_bp.route("/stripe/sucesso")
 def stripe_sucesso():
