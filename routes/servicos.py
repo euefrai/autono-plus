@@ -8,22 +8,24 @@ servicos_bp = Blueprint("servicos", __name__)
 
 @servicos_bp.route("/servicos", methods=["GET", "POST"])
 def servicos():
+    @servicos_bp.route("/servicos", methods=["GET", "POST"])
+def servicos():
     if "user_id" not in session:
         return redirect("/")
 
+    user_id = session.get("user_id")
     conn = get_db()
     cur = conn.cursor()
 
     # CADASTRAR SERVIÇO
     if request.method == "POST":
-        user_id = session.get("user_id")
         user_plan = session.get("plan", "free")
         
-        # Verificação de Limites do Plano
+        # Verificação de Limites para o POST
         cur.execute("SELECT count(*) FROM servicos WHERE user_id = %s", (user_id,))
-        total_servicos = cur.fetchone()[0]
+        total_atual = cur.fetchone()[0]
         
-        if user_plan == "free" and total_servicos >= FREE_LIMITS.get("services", 10):
+        if user_plan == "free" and total_atual >= FREE_LIMITS.get("services", 10):
             flash("🔒 Limite de serviços do plano Free atingido.", "warning")
             return redirect(url_for("billing.upgrade"))
 
@@ -39,23 +41,34 @@ def servicos():
         """, (user_id, cliente_id, descricao, valor, data, status))
         conn.commit()
 
-    # LISTAR SERVIÇOS
+    # LISTAR SERVIÇOS (Aqui é onde preparamos os dados para o HTML)
     cur.execute("""
         SELECT s.id, s.descricao, s.valor, s.data, s.status, c.nome AS cliente_nome, c.telefone
         FROM servicos s
         JOIN clientes c ON c.id = s.cliente_id
         WHERE s.user_id = %s
         ORDER BY s.data DESC
-    """, (session["user_id"],))
+    """, (user_id,))
     servicos_lista = cur.fetchall()
 
-    # BUSCAR CLIENTES PARA O SELECT DO FORMULÁRIO
-    cur.execute("SELECT id, nome FROM clientes WHERE user_id = %s", (session["user_id"],))
+    # BUSCAR CLIENTES PARA O SELECT
+    cur.execute("SELECT id, nome FROM clientes WHERE user_id = %s", (user_id,))
     clientes_lista = cur.fetchall()
+
+    # 🔥 AQUI ESTÁ A CORREÇÃO: Pegamos o total para o template não dar erro
+    cur.execute("SELECT count(*) FROM servicos WHERE user_id = %s", (user_id,))
+    total_para_template = cur.fetchone()[0]
 
     cur.close()
     conn.close()
-    return render_template("servicos.html", servicos=servicos_lista, clientes=clientes_lista)
+
+    # Enviamos 'total_servicos' para o HTML
+    return render_template(
+        "servicos.html", 
+        servicos=servicos_lista, 
+        clientes=clientes_lista, 
+        total_servicos=total_para_template
+    )
 
 @servicos_bp.route("/servicos/cobrar/<int:id>")
 def cobrar_servico(id):
