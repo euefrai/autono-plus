@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, session, url_fo
 import urllib.parse
 from db import get_db
 from utils.plan_limits import FREE_LIMITS
+from utils.permissions import require_premium # Importante para a trava do Zap
 
 servicos_bp = Blueprint("servicos", __name__)
 
@@ -15,15 +16,15 @@ def servicos():
 
     # CADASTRAR SERVIÇO
     if request.method == "POST":
+        user_id = session.get("user_id")
+        user_plan = session.get("plan", "free")
+        
         # Verificação de Limites do Plano
-        cur.execute("SELECT count(*) FROM servicos WHERE user_id = %s", (session["user_id"],))
+        cur.execute("SELECT count(*) FROM servicos WHERE user_id = %s", (user_id,))
         total_servicos = cur.fetchone()[0]
         
-        # Pega o plano da sessão (certifique-se de salvar no login)
-        user_plan = session.get("plan", "free")
-
         if user_plan == "free" and total_servicos >= FREE_LIMITS.get("services", 10):
-            flash("🔒 Limite do plano Free atingido. Faça upgrade.", "warning")
+            flash("🔒 Limite de serviços do plano Free atingido.", "warning")
             return redirect(url_for("billing.upgrade"))
 
         cliente_id = request.form["cliente_id"]
@@ -35,7 +36,7 @@ def servicos():
         cur.execute("""
             INSERT INTO servicos (user_id, cliente_id, descricao, valor, data, status)
             VALUES (%s, %s, %s, %s, %s, %s)
-        """, (session["user_id"], cliente_id, descricao, valor, data, status))
+        """, (user_id, cliente_id, descricao, valor, data, status))
         conn.commit()
 
     # LISTAR SERVIÇOS
@@ -56,27 +57,16 @@ def servicos():
     conn.close()
     return render_template("servicos.html", servicos=servicos_lista, clientes=clientes_lista)
 
-@servicos_bp.route("/servicos/pagar/<int:id>")
-def pagar_servico(id):
-    if "user_id" not in session:
-        return redirect("/")
-
-    conn = get_db()
-    cur = conn.cursor()
-    cur.execute(
-        "UPDATE servicos SET status = 'pago' WHERE id = %s AND user_id = %s",
-        (id, session["user_id"])
-    )
-    conn.commit()
-    cur.close()
-    conn.close()
-
-    return redirect(url_for("servicos.servicos"))
-
 @servicos_bp.route("/servicos/cobrar/<int:id>")
 def cobrar_servico(id):
     if "user_id" not in session:
         return redirect("/")
+
+    # 🔥 TRAVA PREMIUM AQUI, PAUL!
+    user = {"plan": session.get("plan", "free")}
+    if not require_premium(user):
+        flash("⭐ A cobrança via WhatsApp é exclusiva para usuários Premium!", "info")
+        return redirect(url_for("billing.upgrade"))
 
     conn = get_db()
     cur = conn.cursor()
@@ -91,7 +81,8 @@ def cobrar_servico(id):
     conn.close()
 
     if servico:
-        telefone_limpo = "".join(filter(str.isdigit, servico[3]))
+        # servico[3] é o telefone. Limpa caracteres não numéricos.
+        telefone_limpo = "".join(filter(str.isdigit, str(servico[3])))
         if not telefone_limpo.startswith("55"):
             telefone_limpo = "55" + telefone_limpo
         
@@ -108,6 +99,22 @@ def cobrar_servico(id):
     
     return redirect(url_for("servicos.servicos"))
 
+@servicos_bp.route("/servicos/pagar/<int:id>")
+def pagar_servico(id):
+    if "user_id" not in session:
+        return redirect("/")
+
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE servicos SET status = 'pago' WHERE id = %s AND user_id = %s",
+        (id, session["user_id"])
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
+    return redirect(url_for("servicos.servicos"))
+
 @servicos_bp.route("/servicos/excluir/<int:id>")
 def excluir_servico(id):
     if "user_id" not in session:
@@ -115,14 +122,10 @@ def excluir_servico(id):
 
     conn = get_db()
     cur = conn.cursor()
-    cur.execute(
-        "DELETE FROM servicos WHERE id = %s AND user_id = %s",
-        (id, session["user_id"])
-    )
+    cur.execute("DELETE FROM servicos WHERE id = %s AND user_id = %s", (id, session["user_id"]))
     conn.commit()
     cur.close()
     conn.close()
-
     return redirect(url_for("servicos.servicos"))
 
 @servicos_bp.route("/servicos/editar/<int:id>", methods=["GET", "POST"])
@@ -152,10 +155,8 @@ def editar_servico(id):
 
     cur.execute("SELECT * FROM servicos WHERE id = %s AND user_id = %s", (id, session["user_id"]))
     servico = cur.fetchone()
-
     cur.execute("SELECT id, nome FROM clientes WHERE user_id = %s", (session["user_id"],))
     clientes = cur.fetchall()
-
     cur.close()
     conn.close()
     return render_template("editar_servico.html", servico=servico, clientes=clientes)
