@@ -87,32 +87,6 @@ def precos():
 
 
 
-@billing_bp.route("/pagar/premium")
-def pagar_premium():
-    user = session.get("user")
-    if not user:
-        return redirect(url_for("auth.login"))
-
-    session_stripe = stripe.checkout.Session.create(
-        payment_method_types=["card"],
-        line_items=[{
-            "price_data": {
-                "currency": "brl",
-                "product_data": {
-                    "name": "Plano Premium - Autono Plus",
-                },
-                "unit_amount": 1990,  # R$19,90
-            },
-            "quantity": 1,
-        }],
-        mode="payment",
-        success_url=url_for("billing.upgrade_success", _external=True),
-        cancel_url=url_for("billing.precos", _external=True),
-        customer_email=user["email"]
-    )
-
-    return redirect(session_stripe.url)
-
 @billing_bp.route("/stripe/sucesso")
 def stripe_sucesso():
     return redirect(url_for("billing.upgrade_success"))
