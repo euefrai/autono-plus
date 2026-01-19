@@ -31,7 +31,7 @@ def pagar_premium():
                         "name": "Plano Premium - Autono Plus",
                         "description": "Acesso ilimitado e cobrança via WhatsApp",
                     },
-                    "unit_amount": 1990,  # R$ 19,90
+                    "unit_amount": 999,  # R$ 1,89
                 },
                 "quantity": 1,
             }],
