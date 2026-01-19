@@ -8,7 +8,7 @@ def upgrade():
     return render_template("upgrade.html")
 
 
-@billing_bp.route("/upgrade/success")
+@billing.route("/upgrade/success")
 def upgrade_success():
     user = session.get("user")
     if not user:
@@ -39,3 +39,4 @@ def precos():
     user = session.get("user")
 
     return render_template("precos.html", user=user)
+
