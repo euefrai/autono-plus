@@ -6,9 +6,8 @@ from utils.permissions import require_premium # Importante para a trava do Zap
 
 servicos_bp = Blueprint("servicos", __name__)
 
+
 @servicos_bp.route("/servicos", methods=["GET", "POST"])
-def servicos():
-    @servicos_bp.route("/servicos", methods=["GET", "POST"])
 def servicos():
     if "user_id" not in session:
         return redirect("/")
