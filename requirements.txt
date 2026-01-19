@@ -3,5 +3,5 @@ werkzeug
 gunicorn
 psycopg2-binary
 python-dotenv
-
-
+mercadopago
+stripe
