@@ -5,9 +5,10 @@ def count_clients_by_user(user_id):
     cursor = db.cursor()
 
     cursor.execute(
-        "SELECT COUNT(*) FROM clientes WHERE user_id = ?",
+        "SELECT COUNT(*) FROM clientes WHERE user_id = %s",
         (user_id,)
     )
+
 
     total = cursor.fetchone()[0]
     db.close()
