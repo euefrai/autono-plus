@@ -11,7 +11,7 @@ from routes.clientes import clientes_bp
 from routes.servicos import servicos_bp
 from routes.landing import landing_bp
 from routes.admin import admin_bp
-from routes.billing import billing_bp
+from routes.billing import billing
 
 app = Flask(__name__)
 
@@ -26,7 +26,7 @@ app.register_blueprint(dashboard_bp)
 app.register_blueprint(clientes_bp)
 app.register_blueprint(servicos_bp)
 app.register_blueprint(admin_bp)
-app.register_blueprint(billing_bp)
+app.register_blueprint(billing)
 
 if __name__ == "__main__":
     # O debug deve ser True apenas localmente
