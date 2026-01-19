@@ -38,7 +38,7 @@ def login():
             cur.close()
             conn.close()
 
-    return render_template("login.html")
+    return render_template("auth/login.html")
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])
