@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, session, url_for, flash
 from db import get_db
-from utils.permissions import can_create_client
+from utils.permissions import can_create_client, require_premium # Importe as duas
 from models.cliente import count_clients_by_user
 
 clientes_bp = Blueprint("clientes", __name__)
@@ -21,6 +21,10 @@ def clientes():
         # Simula objeto user para a permissão
         user = {"id": user_id, "plan": user_plan}
         
+        # ❌ REMOVI o require_premium daqui, pois o plano Free pode criar até o limite.
+        # Se você quer que Clientes seja SÓ para Premium, mantenha o require, 
+        # mas se quer permitir o teste (limite de 3), use apenas o can_create_client.
+
         # Verifica limite do plano antes de inserir
         total_clients = count_clients_by_user(user_id)
         if not can_create_client(user, total_clients):
@@ -46,7 +50,12 @@ def clientes():
 
     cur.close()
     conn.close()
-    return render_template("clientes.html", clientes=clientes_lista)
+    
+    # IMPORTANTE: Passe o total_clients para o template para o contador funcionar
+    total_atual = count_clients_by_user(session.get("user_id"))
+    return render_template("clientes.html", clientes=clientes_lista, total_clients=total_atual)
+
+# ... (restante das rotas excluir e editar permanecem iguais)
 
 @clientes_bp.route("/clientes/excluir/<int:id>")
 def excluir_cliente(id):
