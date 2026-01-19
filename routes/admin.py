@@ -8,13 +8,16 @@ admin_bp = Blueprint("admin", __name__)
 # =========================================
 def verificar_admin():
     """Verifica se o usuário está logado e se possui cargo de admin"""
-    if not session.get("user_id"):
+    user = session.get("user")
+
+    if not user:
         return redirect(url_for("auth.login"))
-    
-    # Verifica tanto o 'role' quanto o 'is_admin' conforme sua estrutura
-    if session.get("role") != "admin":
-        abort(403) # Retorna "Acesso Proibido" se não for admin
+
+    if user.get("role") != "admin":
+        abort(403)
+
     return None
+
 
 # =========================================
 # ROTAS DO PAINEL ADMIN

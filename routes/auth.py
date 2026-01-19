@@ -15,28 +15,25 @@ def login():
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
         try:
-            # 1. ATENÇÃO: Verifique se o nome da tabela é 'users' ou 'usuarios'
-            # No seu registro você usa 'usuarios', então aqui deve ser 'usuarios' também!
             cur.execute(
-                "SELECT id, nome, email, plan, senha FROM usuarios WHERE email = %s",
+                "SELECT id, nome, email, plan, role, senha FROM usuarios WHERE email = %s",
                 (email,)
             )
             user = cur.fetchone()
 
-            # 2. SEGURANÇA: Use check_password_hash em vez de comparação direta (senha == senha)
             if not user or not check_password_hash(user["senha"], senha):
                 flash("Login inválido", "danger")
                 return render_template("auth/login.html")
 
-            # 3. CORREÇÃO DE NOME: Você definiu a variável como 'user' acima, 
-            # não como 'usuarios'. Por isso dava erro de NameError.
+            # salva tudo em UM lugar
             session["user"] = {
                 "id": user["id"],
                 "nome": user["nome"],
                 "email": user["email"],
-                "plan": user["plan"]
+                "plan": user["plan"],
+                "role": user["role"]
             }
-            # Também salve o ID e o Plano soltos para facilitar suas outras rotas
+
             session["user_id"] = user["id"]
             session["plan"] = user["plan"]
 
@@ -46,8 +43,8 @@ def login():
             cur.close()
             conn.close()
 
-    # 4. CORREÇÃO DE TEMPLATE: Sempre use o caminho completo da pasta
     return render_template("auth/login.html")
+
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])
