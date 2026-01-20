@@ -8,12 +8,10 @@
     <h2>Serviços</h2>
 </div>
 
-<!-- FORMULÁRIO -->
 <section class="form-section animate-slide">
     <form method="post" class="card">
-
-        {% if user.plan == "premium" or total_servicos < 3 %}
-
+        {# Ajustei para 10, que é o limite do seu FREE_LIMITS #}
+        {% if user.plan == "premium" or total_servicos < 10 %}
             <div class="form-group">
                 <label>Cliente</label>
                 <select name="cliente_id" required>
@@ -26,17 +24,22 @@
 
             <div class="form-group">
                 <label>Descrição do serviço</label>
-                <input name="descricao" placeholder="Descrição do serviço" required>
+                <input name="descricao" placeholder="Ex: Manutenção de Ar" required>
             </div>
 
             <div class="form-group">
                 <label>Valor (R$)</label>
-                <input name="valor" type="number" step="0.01" placeholder="0,00">
+                <input name="valor" type="number" step="0.01" placeholder="0,00" required>
             </div>
 
             <div class="form-group">
-                <label>Data</label>
-                <input name="data" type="date" required>
+                <label>Data do serviço</label>
+                <input name="data_servico" type="date" required>
+            </div>
+
+            <div class="form-group">
+                <label>Data de vencimento</label>
+                <input name="data_vencimento" type="date" required>
             </div>
 
             <button type="submit" class="btn-primary hover-scale">
@@ -44,28 +47,27 @@
             </button>
 
         {% else %}
-            <!-- BLOQUEIO FREE -->
             <div class="locked-box">
-                <p>🔒 Limite do plano Free atingido</p>
-                <a href="/precos" class="btn highlight pulse">
+                <p>🔒 Limite de 10 serviços do plano Free atingido</p>
+                <a href="{{ url_for('billing.precos') }}" class="btn highlight pulse">
                     Fazer upgrade
                 </a>
             </div>
         {% endif %}
-
     </form>
 </section>
 
 <hr class="divider">
 
-<!-- TABELA -->
 <div class="table-wrapper animate-fade">
     <table>
         <thead>
             <tr>
                 <th>Cliente</th>
-                <th>Serviço</th>
+                <th>Descrição</th>
                 <th>Valor</th>
+                <th>Data Serviço</th>
+                <th>Vencimento</th>
                 <th>Status</th>
                 <th style="text-align:center;">Ações</th>
             </tr>
@@ -76,38 +78,51 @@
                 <td><strong>{{ s[5] }}</strong></td>
                 <td>{{ s[1] }}</td>
                 <td>R$ {{ "%.2f"|format(s[2]|float) }}</td>
+                <td>{{ s[3].strftime('%d/%m/%Y') if s[3] else '-' }}</td>
+                <td>
+                    {{ s[7].strftime('%d/%m/%Y') if s[7] else '-' }}
+                    {# Se tiver vencido e estiver pendente, mostra o aviso #}
+                    {% if s[7] and s[7] < hoje and s[4] == 'pendente' %}
+                        <br><span class="badge-atrasado">⚠️ Atrasado</span>
+                    {% endif %}
+                </td>
                 <td>
                     <span class="status-badge {{ s[4] }}">
                         {{ 'Pendente' if s[4] == 'pendente' else 'Pago' }}
                     </span>
                 </td>
                 <td class="actions-cell">
-                    {% if s[4] == "pendente" %}
-                        <div class="btn-group-mobile">
-                            <a class="btn-sm btn-whatsapp hover-scale"
+                    <div class="btn-group-mobile">
+                        {% if s[4] == "pendente" %}
+                            <a class="btn-sm btn-whatsapp hover-scale" 
+                               title="Cobrar via WhatsApp"
                                href="{{ url_for('servicos.cobrar_servico', id=s[0]) }}">💬</a>
 
-                            <a class="btn-sm btn-success hover-scale"
+                            <a class="btn-sm btn-success hover-scale" 
+                               title="Marcar como Pago"
                                href="{{ url_for('servicos.pagar_servico', id=s[0]) }}">✅</a>
+                        {% endif %}
 
-                            <a class="btn-sm btn-edit hover-scale"
-                               href="{{ url_for('servicos.editar_servico', id=s[0]) }}">✏️</a>
+                        <a class="btn-sm btn-edit hover-scale" 
+                           title="Editar"
+                           href="{{ url_for('servicos.editar_servico', id=s[0]) }}">✏️</a>
 
-                            <a class="btn-sm btn-delete hover-scale"
-                               href="{{ url_for('servicos.excluir_servico', id=s[0]) }}"
-                               onclick="return confirm('Excluir este serviço?')">🗑️</a>
-                        </div>
-                    {% else %}
-                        <span class="done-text">✅ Pago</span>
-                    {% endif %}
+                        <a class="btn-sm btn-delete hover-scale" 
+                           title="Excluir"
+                           href="{{ url_for('servicos.excluir_servico', id=s[0]) }}"
+                           onclick="return confirm('Excluir este serviço?')">🗑️</a>
+                    </div>
                 </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align: center;">Nenhum serviço registrado.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 
-<!-- VOLTAR -->
 <div class="actions animate-slide">
     <a href="{{ url_for('dashboard.dashboard') }}" class="btn-back hover-scale">
         ← Voltar ao Dashboard
