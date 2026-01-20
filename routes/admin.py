@@ -78,20 +78,25 @@ def excluir_usuario(id):
 @admin_bp.route("/admin/logs")
 def admin_logs():
     erro = verificar_admin()
-    if erro: return erro
+    if erro:
+        return erro
 
     conn = get_db()
-    cur = conn.cursor()
-    
-    # Query ajustada para PostgreSQL com LEFT JOIN
+    cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
     cur.execute("""
-        SELECT l.acao, l.data, u.email 
+        SELECT 
+            l.id,
+            l.acao,
+            l.data,
+            u.email
         FROM logs l
         LEFT JOIN usuarios u ON u.id = l.usuario_id
         ORDER BY l.id DESC
     """)
+
     logs = cur.fetchall()
-    
+
     cur.close()
     conn.close()
 
