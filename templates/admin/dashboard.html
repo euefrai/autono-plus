@@ -1,0 +1,37 @@
+
+
+{% extends "base.html" %}
+{% block title %}Painel Administrativo | Autono+{% endblock %}
+
+{% block content %}
+<div class="container admin-dashboard">
+    <header class="page-header">
+        <h2>Painel Administrativo</h2>
+        <p>Gerencie os usuários e monitore as atividades do sistema.</p>
+    </header>
+
+    <div class="admin-grid">
+        <a href="{{ url_for('admin.admin_usuarios') }}" class="admin-card">
+            <div class="card-icon">👥</div>
+            <div class="card-info">
+                <h3>Usuários</h3>
+                <p>Ver, editar ou excluir contas cadastradas.</p>
+            </div>
+            <span class="card-arrow">→</span>
+        </a>
+
+        <a href="{{ url_for('admin.admin_logs') }}" class="admin-card">
+            <div class="card-icon">📜</div>
+            <div class="card-info">
+                <h3>Logs do Sistema</h3>
+                <p>Histórico de ações e segurança.</p>
+            </div>
+            <span class="card-arrow">→</span>
+        </a>
+    </div>
+
+    <div class="actions">
+        <a href="{{ url_for('dashboard.dashboard') }}" class="btn-secondary">Voltar ao Dashboard</a>
+    </div>
+</div>
+{% endblock %}

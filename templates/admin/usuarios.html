@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Gerenciar Usuários | Autono+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Usuários Cadastrados</h2>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Cargo (Role)</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios %}
+                <tr>
+                    <td>{{ u[1] }}</td>
+                    <td>{{ u[2] }}</td>
+                    <td>
+                        <span class="badge {{ 'admin' if u[3] == 'admin' else 'user' }}">
+                            {{ u[3] }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if u[3] != 'admin' %}
+                            <a class="btn btn-delete" 
+                               href="{{ url_for('admin.excluir_usuario', id=u[0]) }}"
+                               onclick="return confirm('Atenção: Isso excluirá o usuário e todos os seus dados (clientes, serviços e logs). Deseja continuar?')">
+                               Excluir
+                            </a>
+                        {% else %}
+                            <span class="text-muted">Protegido</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions">
+        <br>
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn-back">← Voltar ao Painel Admin</a>
+    </div>
+</div>
+{% endblock %}

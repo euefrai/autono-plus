@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Autono+{% endblock %}
+
+{% block content %}
+
+<!-- HEADER -->
+<div class="page-header animate-fade">
+    <div class="header-flex">
+        <h1>Olá, {{ nome }} 👋</h1>
+
+        {% if user.plan == "premium" %}
+            <span class="badge-premium">✨ Plano Premium</span>
+        {% else %}
+            <span class="badge-limit">Plano Free</span>
+        {% endif %}
+    </div>
+</div>
+
+<!-- CTA PREMIUM (SÓ PARA FREE) -->
+{% if user.plan == "free" %}
+<div class="upgrade-box animate-slide">
+    <p>
+        Você está no <strong>Plano Free</strong>.
+        Desbloqueie relatórios completos e recursos ilimitados.
+    </p>
+    <a href="/precos" class="btn highlight pulse">
+        Virar Premium 🚀
+    </a>
+</div>
+{% endif %}
+
+<!-- CARDS -->
+<div class="cards">
+
+    <div class="card card-total animate-fade">
+        <h3>Total faturado</h3>
+        <p class="value success">
+            R$ {{ "%.2f"|format(total) }}
+        </p>
+    </div>
+
+    <div class="card card-pendente animate-fade delay-1">
+        <h3>A receber</h3>
+        <p class="value warning">
+            R$ {{ "%.2f"|format(pendente) }}
+        </p>
+    </div>
+
+    <div class="card animate-fade delay-2">
+        <h3>Clientes ativos</h3>
+        <p class="value">
+            {{ total_clientes }}
+        </p>
+    </div>
+
+    <div class="card animate-fade delay-3">
+        <h3>Serviços atrasados</h3>
+        <p class="value warning">
+            {{ servicos_atrasados }}
+        </p>
+    </div>
+
+</div>
+
+<!-- NAVEGAÇÃO -->
+<div class="dashboard-nav animate-slide">
+    <a href="{{ url_for('clientes.clientes') }}" class="btn-nav hover-scale">
+        👥 Clientes
+    </a>
+
+    <a href="{{ url_for('servicos.servicos') }}" class="btn-nav hover-scale">
+        🛠️ Serviços
+    </a>
+
+    <a href="{{ url_for('auth.logout') }}" class="btn-nav btn-logout hover-scale">
+        🚪 Sair
+    </a>
+</div>
+
+{% endblock %}

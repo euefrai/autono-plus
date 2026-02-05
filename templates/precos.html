@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Planos | Autono+{% endblock %}
+
+{% block content %}
+
+<section class="pricing-page">
+
+    <!-- TÍTULO -->
+    <div class="pricing-header animate-fade">
+        <h1>Escolha o plano ideal para você</h1>
+        <p class="subtitle">
+            Comece grátis e faça upgrade quando quiser 🚀
+        </p>
+    </div>
+
+    <!-- CARDS -->
+    <div class="pricing-cards">
+
+        <!-- FREE -->
+        <div class="pricing-card free animate-slide">
+            <h2>Plano Free</h2>
+            <p class="price">R$ 0</p>
+
+            <ul>
+                <li>✔️ 1 plano</li>
+                <li>✔️ Até 3 clientes</li>
+                <li>✔️ Até 3 serviços</li>
+                <li>✔️ Acesso básico</li>
+                <li class="muted">❌ Recursos avançados</li>
+            </ul>
+
+            {% if user and user.plan == "free" %}
+                <button class="btn disabled">Plano atual</button>
+            {% else %}
+                <a href="/login" class="btn hover-scale">
+                    Começar grátis
+                </a>
+            {% endif %}
+        </div>
+
+        <!-- PREMIUM (DESTAQUE) -->
+        <div class="pricing-card premium highlight-card animate-slide delay-1">
+            <div class="ribbon">Mais popular</div>
+
+            <h2>Plano Premium</h2>
+            <p class="price">
+                R$ 19,90 <span>/ mês</span>
+            </p>
+
+            <ul>
+                <li>🚀 Planos ilimitados</li>
+                <li>🚀 Clientes ilimitados</li>
+                <li>🚀 Serviços ilimitados</li>
+                <li>🧠 Recursos avançados</li>
+                <li>🔐 Prioridade e novidades</li>
+            </ul>
+
+            {% if user and user.plan == "premium" %}
+                <button class="btn disabled">
+                    Você já é Premium 🚀
+                </button>
+            {% else %}
+                <a href="/pagar/premium" class="btn highlight big pulse">
+                    Quero ser Premium 🚀
+                </a>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- GARANTIA -->
+    <p class="guarantee animate-fade">
+        Sem fidelidade • Cancele quando quiser
+    </p>
+
+</section>
+
+{% endblock %}

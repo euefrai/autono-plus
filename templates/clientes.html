@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Clientes | Autono+{% endblock %}
+
+{% block content %}
+
+<div class="page-header animate-fade">
+    <div class="header-flex">
+        <h2>Clientes</h2>
+
+        <!-- STATUS DO PLANO -->
+        {% if user.plan == "free" %}
+            <span class="badge-limit">
+                Clientes: <strong>{{ total_clients }}</strong>/3 (Free)
+            </span>
+        {% else %}
+            <span class="badge-premium">
+                ✨ Clientes ilimitados (Premium)
+            </span>
+        {% endif %}
+    </div>
+</div>
+
+<!-- FORMULÁRIO -->
+<section class="form-section animate-slide">
+    <form method="post" class="card">
+
+        {% if user.plan == "premium" or total_clients < 3 %}
+            <input name="nome" placeholder="Nome do cliente" required>
+            <input name="telefone" placeholder="Telefone">
+            <input name="observacao" placeholder="Observação">
+
+            <button type="submit" class="btn-primary hover-scale">
+                + Adicionar cliente
+            </button>
+        {% else %}
+            <div class="locked-box">
+                <p>🔒 Limite do plano Free atingido</p>
+                <a href="{{ url_for('billing.precos') }}" class="btn highlight pulse">
+                    Fazer upgrade
+                </a>
+            </div>
+        {% endif %}
+
+    </form>
+</section>
+
+<!-- BUSCA -->
+<section class="form-section animate-slide">
+    <form method="get" class="card" style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
+        <div class="form-group" style="flex: 1 1 220px;">
+            <label>Buscar cliente</label>
+            <input
+                type="text"
+                name="q"
+                placeholder="Nome ou telefone"
+                value="{{ request.args.get('q', '') }}"
+            >
+        </div>
+
+        <button type="submit" class="btn-primary hover-scale">
+            Filtrar
+        </button>
+    </form>
+</section>
+
+<hr class="divider">
+
+<!-- TABELA -->
+<div class="table-wrapper animate-fade">
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Observação</th>
+                <th style="text-align:center;">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in clientes %}
+            <tr>
+                <td data-label="Nome"><strong>{{ c[1] }}</strong></td>
+                <td data-label="Telefone">{{ c[2] }}</td>
+                <td data-label="Observação">{{ c[3] }}</td>
+                <td class="actions-cell">
+                    <div class="btn-group-mobile">
+                        <a class="btn-sm btn-edit hover-scale"
+                           title="Editar"
+                           href="{{ url_for('clientes.editar_cliente', id=c[0]) }}">✏️</a>
+
+                        <a class="btn-sm btn-delete hover-scale"
+                           title="Excluir"
+                           href="{{ url_for('clientes.excluir_cliente', id=c[0]) }}"
+                           onclick="return confirm('Excluir este cliente? Isso apagará todos os serviços dele.')">🗑️</a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- VOLTAR -->
+<div class="actions animate-slide">
+    <a href="{{ url_for('dashboard.dashboard') }}" class="btn-back hover-scale">
+        ← Voltar ao Dashboard
+    </a>
+</div>
+
+{% endblock %}

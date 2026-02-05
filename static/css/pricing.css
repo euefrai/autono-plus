@@ -1,0 +1,135 @@
+/* =========================================
+   PRICING – PÁGINA DE PLANOS
+========================================= */
+
+.pricing-page {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.pricing-header h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.pricing-header .subtitle {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+/* Cards */
+.pricing-cards {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.pricing-card {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 30px;
+  width: 280px;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 25px var(--shadow);
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pricing-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 40px var(--shadow);
+}
+
+.pricing-card h2 {
+  margin-bottom: 10px;
+}
+
+/* Preço */
+.price {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 15px 0;
+}
+
+.price span {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* Lista */
+.pricing-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.pricing-card ul li {
+  margin: 10px 0;
+}
+
+.pricing-card ul li.muted {
+  color: var(--text-muted);
+}
+
+/* Destaque Premium */
+.highlight-card {
+  border: 2px solid var(--primary);
+  transform: scale(1.05);
+}
+
+.ribbon {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  background: var(--primary);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Botões */
+.btn {
+  display: inline-block;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: var(--bg-card);
+  color: var(--text-main);
+  text-decoration: none;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  transition: all 0.25s ease;
+}
+
+.btn:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.btn.highlight {
+  background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+  color: #fff;
+  border: none;
+}
+
+.btn.big {
+  padding: 14px 26px;
+  font-size: 1rem;
+}
+
+.btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Garantia */
+.guarantee {
+  margin-top: 35px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}

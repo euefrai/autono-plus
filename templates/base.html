@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Autono+{% endblock %}</title>
+
+    <!-- CSS base -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- CSS animações (vamos criar já já) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+
+            <!-- Brand -->
+            <a href="{{ url_for('dashboard.dashboard') if user and user.get('id') else url_for('landing.home') }}"
+               class="brand animate-fade">
+                Autono<span>+</span>
+            </a>
+
+            <!-- Links -->
+            <div class="nav-links">
+                {% if user and user.get("id") %}
+                    <a href="{{ url_for('dashboard.dashboard') }}" class="nav-item">Dashboard</a>
+                    <a href="{{ url_for('clientes.clientes') }}" class="nav-item">Clientes</a>
+                    <a href="{{ url_for('servicos.servicos') }}" class="nav-item">Serviços</a>
+
+                    <!-- STATUS DO PLANO -->
+                    <div class="plan-badge animate-slide">
+                        {% if user.plan == "premium" %}
+                            <span class="badge premium">Premium 🚀</span>
+                        {% else %}
+                            <span class="badge free">Free</span>
+                            <a href="{{ url_for('billing.precos') }}" class="upgrade-link pulse">
+                                Fazer upgrade
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <!-- Ações -->
+                    <div class="nav-actions">
+                        <button id="theme-toggle" class="btn-icon hover-scale" type="button">
+                            <span id="theme-icon">🌙</span>
+                        </button>
+                        <a href="{{ url_for('auth.logout') }}" class="btn-logout hover-scale">Sair</a>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="nav-item">Entrar</a>
+                    <a href="{{ url_for('auth.register') }}" class="nav-item">Criar conta</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTEÚDO -->
+    <main class="container animate-page">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+
+</body>
+</html>

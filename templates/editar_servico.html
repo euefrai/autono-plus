@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Serviço | Autono+{% endblock %}
+
+{% block content %}
+
+<div class="page-header animate-fade">
+    <h2>Editar Serviço</h2>
+    <p class="text-muted">
+        Atualize os dados do serviço realizado.
+    </p>
+</div>
+
+<section class="form-section animate-slide">
+    <form method="post" class="card">
+
+        <!-- CLIENTE -->
+        <div class="form-group">
+            <label>Cliente</label>
+            <select name="cliente_id" required>
+                {% for c in clientes %}
+                    <option value="{{ c[0] }}"
+                        {% if c[0] == servico[2] %}selected{% endif %}>
+                        {{ c[1] }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- DESCRIÇÃO -->
+        <div class="form-group">
+            <label>Descrição</label>
+            <input
+                name="descricao"
+                value="{{ servico[3] }}"
+                required
+            >
+        </div>
+
+        <!-- VALOR -->
+        <div class="form-group">
+            <label>Valor (R$)</label>
+            <input
+                name="valor"
+                type="number"
+                step="0.01"
+                value="{{ servico[4] }}"
+            >
+        </div>
+
+        <!-- DATA DO SERVIÇO -->
+        <div class="form-group">
+            <label>Data do serviço</label>
+            <input
+                name="data_servico"
+                type="date"
+                value="{{ servico[6].strftime('%Y-%m-%d') if servico[6] else '' }}"
+            >
+        </div>
+
+        <!-- DATA DE VENCIMENTO -->
+        <div class="form-group">
+            <label>Data de vencimento</label>
+            <input
+                name="data_vencimento"
+                type="date"
+                value="{{ servico[7].strftime('%Y-%m-%d') if servico[7] else '' }}"
+            >
+        </div>
+
+        <!-- STATUS -->
+        <div class="form-group">
+            <label>Status</label>
+            <select name="status">
+                <option value="pendente"
+                    {% if servico[5] == "pendente" %}selected{% endif %}>
+                    Pendente
+                </option>
+                <option value="pago"
+                    {% if servico[5] == "pago" %}selected{% endif %}>
+                    Pago
+                </option>
+            </select>
+        </div>
+
+        <!-- AÇÕES -->
+        <div class="form-actions">
+            <button type="submit" class="btn-primary hover-scale">
+                💾 Salvar alterações
+            </button>
+
+            <a href="{{ url_for('servicos.servicos') }}"
+               class="btn-back hover-scale">
+                Cancelar
+            </a>
+        </div>
+
+    </form>
+</section>
+
+{% endblock %}

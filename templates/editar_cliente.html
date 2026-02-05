@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Cliente | Autono+{% endblock %}
+
+{% block content %}
+
+<div class="page-header animate-fade">
+    <h2>Editar Cliente</h2>
+    <p class="text-muted">
+        Atualize as informações do cliente abaixo.
+    </p>
+</div>
+
+<section class="form-section animate-slide">
+    <form method="post" class="card">
+
+        <div class="form-group">
+            <label>Nome</label>
+            <input
+                name="nome"
+                value="{{ cliente.nome }}"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label>Telefone</label>
+            <input
+                name="telefone"
+                value="{{ cliente.telefone }}"
+            >
+        </div>
+
+        <div class="form-group">
+            <label>Observação</label>
+            <input
+                name="observacao"
+                value="{{ cliente.observacao }}"
+            >
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary hover-scale">
+                💾 Salvar alterações
+            </button>
+
+            <a href="{{ url_for('clientes.clientes') }}"
+               class="btn-back hover-scale">
+                Cancelar
+            </a>
+        </div>
+
+    </form>
+</section>
+
+{% endblock %}
